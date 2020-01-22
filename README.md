@@ -1,6 +1,6 @@
 # nuxtChat
 
-> My mathematical Nuxt.js project
+> Vue.js, Nuxt.js, Node.js (Express), Vue-Socket.IO (Socket.IO), Vuetify.js
 
 ## Build Setup
 
@@ -19,4 +19,3 @@ $ npm run start
 $ npm run generate
 ```
 
-For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
