@@ -1,7 +1,7 @@
 <template>
-  <v-layout column justify-center align-center>
-    <v-flex xs12 sm8>
-      <v-card min-width="370" color="grey darken-3">
+  <v-layout column justify-center align-center class="grey darken-3">
+    <v-flex>
+      <v-card min-width="370" color="grey darken-2">
         <v-snackbar v-model="snackbar" :timeout="3000" top>
           {{ message }}
           <v-btn dark text @click="snackbar = false">Close</v-btn>

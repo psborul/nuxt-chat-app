@@ -135,7 +135,8 @@ export default {
   },
   mounted() {},
   created() {
-    this.link = "http://localhost:3000/invite/" + this.room;
+    //this.link = "http://localhost:3000/invite/" + this.room; //dev
+    this.link = "https://memory-spiel.herokuapp.com/" + this.room;
   },
   methods: {
     ...mapMutations(["nextUser"]),
@@ -162,11 +163,6 @@ export default {
           }
         });
       }
-    },
-    invite() {
-      console.log(this.room);
-      //this.link = "my-nuxt-chat-app.herokuapp.com/invite/" + this.room;
-      this.link = "http://localhost:3000/invite/" + this.room;
     },
     onCopy: function(e) {
       //alert("You just copied: " + e.text);
