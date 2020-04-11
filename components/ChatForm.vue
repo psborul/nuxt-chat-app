@@ -24,6 +24,7 @@ export default {
   methods: {
     send() {
       if (this.text.length) {
+        console.log("chatform.vue-send", this.text, this.user.id);
         this.$socket.emit(
           "createMessage",
           {

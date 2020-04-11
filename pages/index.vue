@@ -11,7 +11,12 @@
           <h1>Login</h1>
         </v-card-title>
         <v-card-text>
-          <v-form ref="form" v-model="valid" lazy-validation @submit.prevent="submit">
+          <v-form
+            ref="form"
+            v-model="valid"
+            lazy-validation
+            @submit.prevent="submit"
+          >
             <v-text-field
               v-model="name"
               :counter="16"
@@ -25,7 +30,9 @@
               label="Enter the room"
               required
             ></v-text-field>
-            <v-btn :disabled="!valid" color="primary" class="mr-4" type="submit">Submit</v-btn>
+            <v-btn :disabled="!valid" color="primary" class="mr-4" type="submit"
+              >Submit</v-btn
+            >
           </v-form>
         </v-card-text>
       </v-card>
@@ -40,7 +47,7 @@ export default {
   name: "index",
   layout: "login",
   head: {
-    title: "Nuxt-chat"
+    title: "Nuxt-chat",
   },
   data: () => ({
     valid: true,
@@ -48,12 +55,12 @@ export default {
     message: "",
     id: null,
     nameRules: [
-      v => !!v || "Name is required",
-      v => (v && v.length <= 16) || "Name must be less than 16 characters"
+      (v) => !!v || "Name is required",
+      (v) => (v && v.length <= 16) || "Name must be less than 16 characters",
     ],
     room: "",
-    roomRules: [v => !!v || "Enter the room"],
-    snackbar: false
+    roomRules: [(v) => !!v || "Enter the room"],
+    snackbar: false,
   }),
   mounted() {
     const { message } = this.$route.query;
@@ -72,15 +79,17 @@ export default {
         const user = {
           name: this.name,
           room: this.room,
-          id: 0
+          id: 0,
+          score: 0,
+          hasTurn: false,
         };
-        this.$socket.emit("createUser", user, data => {
+        this.$socket.emit("createUser", user, (data) => {
           user.id = data.id;
           this.setUser(user);
-          this.$router.push("/chat");
+          this.$router.push("/memory");
         });
       }
-    }
-  }
+    },
+  },
 };
 </script>
