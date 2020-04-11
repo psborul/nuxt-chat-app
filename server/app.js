@@ -15,6 +15,11 @@ io.on("connection", (socket) => {
     cb({ id: socket.id });
   });
 
+  socket.on("checkRoom", (user, cb) => {
+    const usersInRoom = users.getUsersByRoom(user.room).length;
+    cb(usersInRoom);
+  });
+
   socket.on("joinRoom", (user) => {
     console.log("socket.on(joinRoom)", user);
     socket.join(user.room);
@@ -60,11 +65,9 @@ io.on("connection", (socket) => {
       io.to(user.room).emit("updateUsers", users.getUsersByRoom(user.room));
       socket.emit("setUser", user);
     } else {
-      user.hasTurn = false;
-      users.setUser(user.id, user);
       users.nextUser(user.id, user.room);
       io.to(user.room).emit("updateUsers", users.getUsersByRoom(user.room));
-      socket.emit("setUser", user);
+      //socket.emit("setUser", user);
     }
     socket.emit("checkForMatch", data);
     io.to(user.room).emit("setCards", data.cards);

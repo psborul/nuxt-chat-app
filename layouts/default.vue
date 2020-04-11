@@ -1,8 +1,13 @@
 <template>
   <v-app>
-    <v-navigation-drawer app v-model="drawer" mobile-break-point="650">
+    <v-navigation-drawer
+      app
+      v-model="drawer"
+      mobile-break-point="650"
+      color="grey darken-2"
+    >
       <v-list subheader>
-        <v-subheader>Users in room</v-subheader>
+        <v-subheader>Spieler im Raum</v-subheader>
 
         <v-list-item
           v-for="(u, index) in users"
@@ -22,22 +27,17 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar app>
+    <v-app-bar app color="grey darken-2">
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>
-        Room
-        <v-chip color="grey">{{ user.room }}</v-chip>
-      </v-toolbar-title>
+      <v-toolbar-title> Memory - Raum: "{{ user.room }}" </v-toolbar-title>
       <v-spacer></v-spacer>
+
       <v-btn icon class="mx-1" @click="exit">
         <v-icon>mdi-exit-to-app</v-icon>
       </v-btn>
     </v-app-bar>
-
-    <v-content>
-      <v-container fluid style="height: 100%;">
-        <nuxt />
-      </v-container>
+    <v-content class="grey darken-3">
+      <nuxt />
     </v-content>
   </v-app>
 </template>
@@ -53,10 +53,11 @@ export default {
     updateUsers(users) {
       console.log("default.vue-sockets-updateUsers", users);
       this.updateUsers(users);
-      const myUser = this.users.find((user) => user.id === this.user.id);
+      const myUser = users.find((user) => user.id === this.user.id);
       this.setUser(myUser);
     },
     setUser(user) {
+      console.log("default.vue-sockets-setUser", user);
       this.setUser(user);
     },
     newMessage(msg) {

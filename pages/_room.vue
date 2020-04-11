@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-banner app sticky color="grey darken-3">
+    <v-banner app sticky color="grey darken-2" elevation="5">
       <v-badge
         v-for="(user, index) in users"
         :key="`user-chips-${index}`"
@@ -21,41 +21,66 @@
     </v-snackbar>
     <v-row justify="center">
       <v-col cols="12">
-        <v-card>
-          <v-btn light color="primary" block v-on:click="createGame()"
-            >Spiel starten!</v-btn
-          >
-
+        <v-card color="grey darken-2">
           <v-card-subtitle v-if="hasTurn">Du bist dran!</v-card-subtitle>
+          <v-card-subtitle v-else>Du bist nicht dran.</v-card-subtitle>
+          <v-card-text>
+            <v-select
+              v-model="amount"
+              :items="cardNumbers"
+              label="Anzahl Pärchen"
+              solo
+              class="mb-n6"
+            ></v-select>
+            <v-btn
+              class="my-1"
+              block
+              color="primary"
+              :disabled="!amount"
+              v-on:click="createGame()"
+              >Neues Spiel!</v-btn
+            >
+
+            <v-btn
+              class="my-1"
+              block
+              color="teal"
+              v-clipboard:copy="link"
+              v-clipboard:success="onCopy"
+              v-clipboard:error="onError"
+            >
+              Freunde in Spielzimmer einladen
+            </v-btn>
+          </v-card-text>
         </v-card>
-        <!--
-        <Message
-          v-for="(message, index) in messages"
-          :key="`message-${index}`"
-          :name="message.name"
-          :text="message.text"
-          :time="message.time"
-          :owner="message.id === user.id"
-        />-->
       </v-col>
     </v-row>
-    <v-row>
+    <v-row v-if="cards.length">
       <v-col cols="12">
-        <v-card color="grey darken-3">
+        <v-card color="grey darken-2">
           <v-container fluid>
             <v-row>
               <v-col
                 v-for="(card, index) in cards"
                 :key="`card-${index}`"
-                class="d-flex child-flex"
+                class="d-flex child-flex pa-2"
                 cols="3"
+                :md="2"
+                :sm="3"
               >
-                <v-card flat tile class="d-flex">
+                <v-card
+                  flat
+                  tile
+                  class="d-flex red"
+                  :elevation="!card.img.includes('cardBack') ? '24' : '0'"
+                >
                   <v-img
                     :src="card.img"
                     aspect-ratio="1"
                     class="grey lighten-2"
-                    v-on:click="flipCard(card)"
+                    v-on:click="
+                      !card.img.includes('cardBack') ? '' : flipCard(card)
+                    "
                     :class="card.found ? 'found' : ''"
                   >
                   </v-img>
@@ -87,8 +112,12 @@ export default {
   },
   data() {
     return {
+      room: this.$route.params.room,
       snackbar: false,
-      message: ""
+      message: "",
+      link: null,
+      cardNumbers: [2, 4, 6, 8, 10, 12],
+      amount: null
     };
   },
   computed: {
@@ -105,17 +134,15 @@ export default {
     }
   },
   mounted() {},
-
+  created() {
+    this.link = "http://localhost:3000/invite/" + this.room;
+  },
   methods: {
     ...mapMutations(["nextUser"]),
     createGame() {
       console.log("los geklickt");
-      /*
-      this.Memory = new Memory(grid, result);
-      this.Memory.createBoard();
-      */
-      this.$socket.emit("createGame", this.user, 12);
-      //createBoard(grid);
+
+      this.$socket.emit("createGame", this.user, this.amount);
     },
     flipCard(card) {
       if (!this.hasTurn) {
@@ -135,6 +162,19 @@ export default {
           }
         });
       }
+    },
+    invite() {
+      console.log(this.room);
+      //this.link = "my-nuxt-chat-app.herokuapp.com/invite/" + this.room;
+      this.link = "http://localhost:3000/invite/" + this.room;
+    },
+    onCopy: function(e) {
+      //alert("You just copied: " + e.text);
+      this.message = e.text + " wurde kopiert";
+      this.snackbar = true;
+    },
+    onError: function(e) {
+      alert("Failed to copy texts");
     }
   }
 };

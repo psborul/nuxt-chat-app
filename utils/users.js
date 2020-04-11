@@ -20,13 +20,18 @@ class Users {
     const usersInSameRoom = this.getUsersByRoom(room);
     const currentUserIndex = usersInSameRoom.findIndex(user => user.id === id);
     var nextUserRoomIndex = -1;
-    if (currentUserIndex !== usersInSameRoom.length - 1) {
+    console.log("next user find current: ", currentUserIndex);
+    if (currentUserIndex < usersInSameRoom.length - 1) {
       nextUserRoomIndex = currentUserIndex + 1;
     } else {
       nextUserRoomIndex = 0;
     }
     const nextUser = usersInSameRoom[nextUserRoomIndex];
+    const currentUser = usersInSameRoom[currentUserIndex];
+    currentUser.hasTurn = false;
     nextUser.hasTurn = true;
+    console.log(currentUser, nextUser);
+    this.setUser(currentUser.id, currentUser);
     this.setUser(nextUser.id, nextUser);
   }
 

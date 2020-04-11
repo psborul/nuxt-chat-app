@@ -13,9 +13,10 @@ class Memory {
 
     this.cardBack = this.files.find(file => file.name === "cardBack");
     this.files = this.files.filter(file => file.name !== "cardBack");
-    console.log(this.files);
+    // console.log(this.files);
 
     this.cards = this.files;
+
     /*
     this.cards = [
       {
@@ -117,7 +118,7 @@ class Memory {
 
   checkForMatch() {
     var result = false;
-    console.log("checkForMatch: ", this.cardsChosen);
+    // console.log("checkForMatch: ", this.cardsChosen);
     const firstId = this.cardsChosen[0].index;
     const secondId = this.cardsChosen[1].index;
 

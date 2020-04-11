@@ -1,14 +1,14 @@
 <template>
-  <v-layout column justify-center align-center class="grey darken-3">
+  <v-layout column justify-center align-center>
     <v-flex xs12 sm8>
-      <v-card raised min-width="370" color="grey darken-2">
+      <v-card min-width="370" color="grey darken-3">
         <v-snackbar v-model="snackbar" :timeout="3000" top>
           {{ message }}
           <v-btn dark text @click="snackbar = false">Close</v-btn>
         </v-snackbar>
 
         <v-card-title>
-          <h1>Spiel erstellen</h1>
+          <h1>Spielzimmer {{ room }} betreten</h1>
         </v-card-title>
         <v-card-text>
           <v-form
@@ -22,12 +22,6 @@
               :counter="16"
               :rules="nameRules"
               label="Name"
-              required
-            ></v-text-field>
-            <v-text-field
-              v-model="room"
-              :rules="roomRules"
-              label="Spielzimmer"
               required
             ></v-text-field>
             <v-btn :disabled="!valid" color="primary" class="mr-4" type="submit"
@@ -44,10 +38,10 @@
 import { mapMutations } from "vuex";
 
 export default {
-  name: "index",
+  name: "invited",
   layout: "login",
   head: {
-    title: "Memory",
+    title: "Memory"
   },
   data: () => ({
     valid: true,
@@ -55,20 +49,15 @@ export default {
     message: "",
     id: null,
     nameRules: [
-      (v) => !!v || "Bitte tragen einen Namen ein",
-      (v) => (v && v.length <= 16) || "Bitte höchstens 16 Zeichen",
+      v => !!v || "Bitte tragen einen Namen ein",
+      v => (v && v.length <= 16) || "Bitte höchstens 16 Zeichen"
     ],
     room: "",
-    roomRules: [(v) => !!v || "Dein Spielzimmer braucht einen Namen"],
-    snackbar: false,
+    snackbar: false
   }),
   mounted() {
-    const { message } = this.$route.query;
-    if (message === "noUser") {
-      this.message = "Gib Namen und Spielzimmer an";
-    } else if (message === "leftChat") {
-      this.message = "Spiel verlassen";
-    }
+    this.room = this.$route.params.invited;
+    this.message = "Gib deinen Namen an";
     this.snackbar = !!this.message;
   },
 
@@ -81,18 +70,18 @@ export default {
           room: this.room,
           id: 0,
           score: 0,
-          hasTurn: false,
+          hasTurn: false
         };
-        this.$socket.emit("checkRoom", user, (data) => {
+        this.$socket.emit("checkRoom", user, data => {
           console.log(data + " users in room");
           if (data <= 3) {
-            this.$socket.emit("createUser", user, (data) => {
+            this.$socket.emit("createUser", user, data => {
               user.id = data.id;
               this.setUser(user);
               // this.$router.push("/memory");
               this.$router.push({
                 name: "room",
-                params: { room: this.room },
+                params: { room: this.room }
               });
             });
           } else {
@@ -101,7 +90,7 @@ export default {
           }
         });
       }
-    },
-  },
+    }
+  }
 };
 </script>

@@ -16,12 +16,13 @@
     "express": "^4.16.4",
     "file-set": "^3.0.0",
     "nuxt": "^2.0.0",
+    "nuxt-clipboard2": "^0.2.1",
     "sass": "^1.23.7",
     "socket.io": "^2.3.0",
     "vue-socket.io": "^3.0.7"
   },
   "devDependencies": {
-    "@nuxtjs/vuetify": "^1.0.0",
+    "@nuxtjs/vuetify": "^1.11.0",
     "nodemon": "^1.18.9"
   }
 }
