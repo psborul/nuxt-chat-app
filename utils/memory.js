@@ -1,13 +1,46 @@
 class Memory {
   constructor() {
+    const FileSet = require("file-set");
+    this.files = new FileSet("static/images/*.jpg");
+
+    this.files = this.files.files.map(file => {
+      const words = file.split("/");
+      return {
+        name: words[2].substring(0, words[2].length - 4),
+        img: words[1] + "/" + words[2]
+      };
+    });
+
+    this.cardBack = this.files.find(file => file.name === "cardBack");
+    this.files = this.files.filter(file => file.name !== "cardBack");
+    console.log(this.files);
+
+    this.cards = this.files;
+    /*
     this.cards = [
+      {
+        name: "bird",
+        img: "images/bird.jpg"
+      },
       {
         name: "cat",
         img: "images/cat.jpg"
       },
       {
+        name: "dandelion",
+        img: "images/dandelion.jpg"
+      },
+      {
+        name: "deer",
+        img: "images/deer.jpg"
+      },
+      {
         name: "dove",
         img: "images/dove.jpg"
+      },
+      {
+        name: "fox",
+        img: "images/fox.jpg"
       },
       {
         name: "lion",
@@ -22,14 +55,23 @@ class Memory {
         img: "images/snowfox.jpg"
       },
       {
+        name: "swan",
+        img: "images/swan.jpg"
+      },
+      {
+        name: "tiger",
+        img: "images/tiger.jpg"
+      },
+      {
         name: "turtle",
         img: "images/turtle.jpg"
       }
     ];
+    /*
     this.cardBack = {
       name: "cardBack",
-      img: "images/cover.jpg"
-    };
+      img: "images/cardBack.jpg"
+    };*/
 
     this.cardsChosen = [];
     this.cardsArray = [];
@@ -39,8 +81,13 @@ class Memory {
     return this.cardsChosen;
   }
 
+  getFiles() {
+    return this.files;
+  }
+
   initCardsArray(amount) {
     var cardsArray = [];
+    this.cards.sort(() => 0.5 - Math.random());
     const max = amount < this.cards.length ? amount : this.cards.length;
     for (let index = 0; index < max; index++) {
       cardsArray.push(this.cards[index]);

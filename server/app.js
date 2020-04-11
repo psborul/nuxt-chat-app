@@ -31,6 +31,7 @@ io.on("connection", (socket) => {
   socket.on("createGame", (user, amount) => {
     console.log("socket.on(createGame)", user);
     const cardsArray = Memory.initCardsArray(amount);
+    console.log("memory get files", Memory.getFiles());
     users.nextUser(user.id, user.room);
     io.to(user.room).emit(
       "newMessage",

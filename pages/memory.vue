@@ -109,7 +109,7 @@ export default {
       this.Memory = new Memory(grid, result);
       this.Memory.createBoard();
       */
-      this.$socket.emit("createGame", this.user, 6);
+      this.$socket.emit("createGame", this.user, 10);
       //createBoard(grid);
     },
     flipCard(card) {
