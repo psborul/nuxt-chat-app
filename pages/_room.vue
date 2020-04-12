@@ -136,7 +136,7 @@ export default {
   mounted() {},
   created() {
     //this.link = "http://localhost:3000/invite/" + this.room; //dev
-    this.link = "https://memory-spiel.herokuapp.com/" + this.room;
+    this.link = "https://memory-spiel.herokuapp.com/invite" + this.room;
   },
   methods: {
     ...mapMutations(["nextUser"]),
