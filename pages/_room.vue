@@ -105,7 +105,7 @@ export default {
   name: "memory",
   layout: "default",
   head: {
-    title: "Nuxt-chat-memory"
+    title: "Spielzimmer"
   },
   components: {
     Message

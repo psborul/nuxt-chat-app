@@ -1,10 +1,10 @@
 <template>
   <v-layout column justify-center align-center class="grey darken-3">
-    <v-flex>
-      <v-card min-width="370" color="grey darken-2">
+    <v-flex xs12 sm8>
+      <v-card raised min-width="370" color="grey darken-2">
         <v-snackbar v-model="snackbar" :timeout="3000" top>
           {{ message }}
-          <v-btn dark text @click="snackbar = false">Close</v-btn>
+          <v-btn dark text @click="snackbar = false">Schließen</v-btn>
         </v-snackbar>
 
         <v-card-title>
@@ -41,7 +41,7 @@ export default {
   name: "invited",
   layout: "login",
   head: {
-    title: "Memory"
+    title: "Einladung"
   },
   data: () => ({
     valid: true,

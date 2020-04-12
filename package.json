@@ -1,8 +1,8 @@
 {
-  "name": "nuxt-chat-app",
+  "name": "memory-spiel",
   "version": "1.0.0",
-  "description": "Simple chat on Nuxt.js",
-  "author": "Petr Borul",
+  "description": "Online Memory Mehrspieler Spiel",
+  "author": "Michael Schütte",
   "private": false,
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon server/index.js --watch server",

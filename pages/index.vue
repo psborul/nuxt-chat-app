@@ -4,7 +4,7 @@
       <v-card raised min-width="370" color="grey darken-2">
         <v-snackbar v-model="snackbar" :timeout="3000" top>
           {{ message }}
-          <v-btn dark text @click="snackbar = false">Close</v-btn>
+          <v-btn dark text @click="snackbar = false">Schließen</v-btn>
         </v-snackbar>
 
         <v-card-title>
@@ -47,7 +47,7 @@ export default {
   name: "index",
   layout: "login",
   head: {
-    title: "Memory",
+    title: "Startseite"
   },
   data: () => ({
     valid: true,
@@ -55,12 +55,12 @@ export default {
     message: "",
     id: null,
     nameRules: [
-      (v) => !!v || "Bitte tragen einen Namen ein",
-      (v) => (v && v.length <= 16) || "Bitte höchstens 16 Zeichen",
+      v => !!v || "Bitte tragen einen Namen ein",
+      v => (v && v.length <= 16) || "Bitte höchstens 16 Zeichen"
     ],
     room: "",
-    roomRules: [(v) => !!v || "Dein Spielzimmer braucht einen Namen"],
-    snackbar: false,
+    roomRules: [v => !!v || "Dein Spielzimmer braucht einen Namen"],
+    snackbar: false
   }),
   mounted() {
     const { message } = this.$route.query;
@@ -81,18 +81,18 @@ export default {
           room: this.room,
           id: 0,
           score: 0,
-          hasTurn: false,
+          hasTurn: false
         };
-        this.$socket.emit("checkRoom", user, (data) => {
+        this.$socket.emit("checkRoom", user, data => {
           console.log(data + " users in room");
           if (data <= 3) {
-            this.$socket.emit("createUser", user, (data) => {
+            this.$socket.emit("createUser", user, data => {
               user.id = data.id;
               this.setUser(user);
               // this.$router.push("/memory");
               this.$router.push({
                 name: "room",
-                params: { room: this.room },
+                params: { room: this.room }
               });
             });
           } else {
@@ -101,7 +101,7 @@ export default {
           }
         });
       }
-    },
-  },
+    }
+  }
 };
 </script>
