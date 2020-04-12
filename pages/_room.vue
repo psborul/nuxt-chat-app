@@ -49,7 +49,7 @@
               v-clipboard:success="onCopy"
               v-clipboard:error="onError"
             >
-              Freunde in Spielzimmer einladen
+              Spielzimmer-Link teilen
             </v-btn>
           </v-card-text>
         </v-card>
@@ -136,7 +136,7 @@ export default {
   mounted() {},
   created() {
     //this.link = "http://localhost:3000/invite/" + this.room; //dev
-    this.link = "https://memory-spiel.herokuapp.com/invite" + this.room;
+    this.link = "https://memory-spiel.herokuapp.com/invite/" + this.room;
   },
   methods: {
     ...mapMutations(["nextUser"]),
@@ -166,7 +166,9 @@ export default {
     },
     onCopy: function(e) {
       //alert("You just copied: " + e.text);
-      this.message = e.text + " wurde kopiert";
+      this.message =
+        e.text +
+        " wurde kopiert. Teile den Link, um Freunde in den Raum einzuladen";
       this.snackbar = true;
     },
     onError: function(e) {
