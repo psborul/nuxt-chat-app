@@ -1,29 +1,29 @@
-const consola = require('consola');
-const { Nuxt, Builder } = require('nuxt');
-const { app, server } = require('./app');
+const consola = require("consola");
+const { Nuxt, Builder } = require("nuxt");
+const { app, server } = require("./app");
 
-const config = require('../nuxt.config.js')
-config.dev = process.env.NODE_ENV !== 'production'
+const config = require("../nuxt.config.js");
+config.dev = process.env.NODE_ENV !== "production";
 
 async function start() {
-  const nuxt = new Nuxt(config)
+  const nuxt = new Nuxt(config);
 
-  const { host, port } = nuxt.options.server
+  const { host, port } = nuxt.options.server;
 
   if (config.dev) {
-    const builder = new Builder(nuxt)
-    await builder.build()
+    const builder = new Builder(nuxt);
+    await builder.build();
   } else {
-    await nuxt.ready()
+    await nuxt.ready();
   }
 
-  app.use(nuxt.render)
+  app.use(nuxt.render);
 
-  server.listen(port, () => {
+  server.listen(process.env.PORT || port, () => {
     consola.ready({
       message: `Server listening on http://${host}:${port}`,
       badge: true
-    })
-  })
+    });
+  });
 }
-start()
+start();
