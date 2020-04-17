@@ -1,0 +1,8 @@
+query {
+  memoryRecords(order_by: { pairNumber: asc }) {
+    id
+    turns
+    timeMs
+    pairNumber
+  }
+}

@@ -11,32 +11,71 @@ class Users {
     return this.users.find(user => user.id === id);
   }
 
-  setUser(id, newUserData) {
-    const index = this.users.findIndex(user => user.id === id);
+  setUser(newUserData) {
+    const index = this.users.findIndex(user => user.id === newUserData.id);
     this.users[index] = newUserData;
   }
 
-  nextUser(id, room) {
-    const usersInSameRoom = this.getUsersByRoom(room);
-    const currentUserIndex = usersInSameRoom.findIndex(user => user.id === id);
-    var nextUserRoomIndex = -1;
-    console.log("next user find current: ", currentUserIndex);
+  waitingUsers(room) {
+    const usersInRoom = this.getUsersByRoom(room);
+    const waitingUsers = usersInRoom.filter(
+      user => user.finishedWaiting === false
+    );
+    return waitingUsers.length;
+  }
+
+  startWaiting(room) {
+    this.users.map(user => {
+      if (user.room === room) {
+        user.finishedWaiting = false;
+      }
+    });
+  }
+
+  nextUser(callingUser) {
+    const usersInSameRoom = this.getUsersByRoom(callingUser.room);
+    if (!usersInSameRoom.length) {
+      callingUser.hasTurn = true;
+      // callingUser.isCreator = true;
+      this.addUser(callingUser);
+      return;
+    }
+    if (usersInSameRoom && usersInSameRoom.length === 1) {
+      callingUser.hasTurn = true;
+      // callingUser.isCreator = true;
+      this.setUser(callingUser);
+      return;
+    }
+    //hasTurn von allen usern entfernen
+    this.users.map(user => {
+      if (user.room === callingUser.room) {
+        user.hasTurn = false;
+      }
+    });
+    const currentUserIndex = usersInSameRoom.findIndex(
+      user => user.id === callingUser.id
+    );
+    var nextUserRoomIndex = 0;
+    console.log("next user find current: ", currentUserIndex, usersInSameRoom);
     if (currentUserIndex < usersInSameRoom.length - 1) {
       nextUserRoomIndex = currentUserIndex + 1;
-    } else {
-      nextUserRoomIndex = 0;
     }
     const nextUser = usersInSameRoom[nextUserRoomIndex];
-    const currentUser = usersInSameRoom[currentUserIndex];
-    currentUser.hasTurn = false;
+    // const currentUser = usersInSameRoom[currentUserIndex];
+    // currentUser.hasTurn = false;
     nextUser.hasTurn = true;
-    console.log(currentUser, nextUser);
-    this.setUser(currentUser.id, currentUser);
-    this.setUser(nextUser.id, nextUser);
+    console.log(callingUser, nextUser);
+    // this.setUser(currentUser.id, currentUser);
+    this.setUser(nextUser);
   }
 
   getUsersByRoom(room) {
-    return this.users.filter(user => user.room === room);
+    const usersInSameRoom = this.users.filter(user => user.room === room);
+    if (usersInSameRoom.length) {
+      usersInSameRoom[0].isCreator = true;
+      this.setUser(usersInSameRoom[0]);
+    }
+    return usersInSameRoom;
   }
 
   removeUser(id) {

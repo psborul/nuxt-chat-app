@@ -1,0 +1,14 @@
+mutation newRecord($pairNumber: Int, $turns: Int, $timeMs: Int) {
+  update_memoryRecords(
+    where: { pairNumber: { _eq: $pairNumber } }
+    _set: { timeMs: $timeMs, turns: $turns }
+  ) {
+    affected_rows
+    returning {
+      turns
+      timeMs
+      pairNumber
+      id
+    }
+  }
+}

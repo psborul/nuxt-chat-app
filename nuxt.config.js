@@ -38,13 +38,27 @@ module.exports = {
   /*
    ** Nuxt.js modules
    */
-  modules: ["nuxt-clipboard2"],
+  modules: ["nuxt-clipboard2", "@nuxtjs/apollo"],
   /*
    ** vuetify module configuration
    ** https://github.com/nuxt-community/vuetify-module
    */
+  apollo: {
+    cookieAttributes: {
+      expires: 7 // optional, default: 7 (days)
+    },
+    includeNodeModules: true, // optional, default: false (this includes graphql-tag for node_modules folder)
+    authenticationType: "Bearer", // optional, default: 'Bearer'
+    // optional
+    errorHandler: "~/plugins/apollo-error-handler.js",
+    // required
+    clientConfigs: {
+      default: "~/apollo/clientConfig.js"
+    }
+  },
+
   vuetify: {
-    customVariables: ["~/assets/variables.scss"],
+    //customVariables: ["~/assets/variables.scss"],
     theme: {
       dark: true,
       themes: {

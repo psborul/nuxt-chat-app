@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-navigation-drawer
+    <!-- <v-navigation-drawer
       app
       v-model="drawer"
       mobile-break-point="650"
@@ -25,10 +25,10 @@
           </v-list-item-icon>
         </v-list-item>
       </v-list>
-    </v-navigation-drawer>
+    </v-navigation-drawer>-->
 
     <v-app-bar app color="grey darken-2">
-      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+      <!--<v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>-->
       <v-toolbar-title> Memory - Raum: "{{ user.room }}" </v-toolbar-title>
       <v-spacer></v-spacer>
 
@@ -47,26 +47,33 @@ import { mapState, mapMutations } from "vuex";
 
 export default {
   data: () => ({
-    drawer: false,
+    drawer: false
   }),
   sockets: {
     updateUsers(users) {
       console.log("default.vue-sockets-updateUsers", users);
       this.updateUsers(users);
-      const myUser = users.find((user) => user.id === this.user.id);
+      const myUser = users.find(user => user.id === this.user.id);
       this.setUser(myUser);
     },
     setUser(user) {
       console.log("default.vue-sockets-setUser", user);
       this.setUser(user);
     },
+    waitingUsers(waitingUsers) {
+      console.log("default.vue-sockets-setUser", waitingUsers);
+      this.setWaitingUsers(waitingUsers);
+    },
     newMessage(msg) {
       console.log("default.vue-sockets-newMessage", msg);
       this.newMessage(msg);
     },
-    setCards(cards) {
-      console.log("default.vue-sockets-setCards", cards);
-      this.setCards(cards);
+    setGame(game) {
+      console.log("default.vue-sockets-setGame", game);
+      this.setGame(game);
+      const thisUser = { ...this.user };
+      thisUser.finishedWaiting = true;
+      this.$socket.emit("finishedWaiting", thisUser);
     },
     flipCard(cardsChosen) {
       console.log("default.vue-sockets-flipcard", cardsChosen);
@@ -79,33 +86,15 @@ export default {
         data.result,
         data.cardsChosen
       );
-      /*
-      if (result) {
-        const user = {
-          ...this.user,
-          score: this.user.score + 1,
-        };
-        this.setUser(user);
-        var myUsers = JSON.parse(JSON.stringify(this.users));
-        console.log("vorher", myUsers);
-        myUsers = myUsers.map((myUser) => {
-          console.log("in map", myUser);
-          if (myUser.id === this.user.id) {
-            console.log(myUser.id, this.user.id);
-            myUser.score = this.user.score;
-            console.log("nach änderung in map", myUser);
-            return myUser;
-          }
-        });
-        console.log("nach map", myUsers);
-        this.updateUsers(myUsers);
-      }*/
-      // this.setCards(data.cards);
       this.setCardsChosen(data.cardsChosen);
     },
+    gotKicked() {
+      console.log("default.vue sockets gotKicked");
+      this.exit();
+    }
   },
   computed: {
-    ...mapState(["user", "users"]),
+    ...mapState(["user", "users"])
   },
   middleware: "auth",
   methods: {
@@ -113,13 +102,14 @@ export default {
       "clearData",
       "updateUsers",
       "newMessage",
-      "setCards",
+      "setGame",
       "setCardsChosen",
       "setUser",
+      "setWaitingUsers"
     ]),
     exit() {
       this.$socket.emit("leftChat", () => {
-        this.$router.push("/?message=leftChat");
+        this.$router.push("/?message=gotKicked");
         this.clearData();
       });
     },
@@ -129,11 +119,11 @@ export default {
         console.log("give turn in if");
         this.nextUser(this.users[0].id);
       }
-    },
+    }
   },
   created() {
     this.$socket.emit("joinRoom", this.user);
   },
-  mounted() {},
+  mounted() {}
 };
 </script>

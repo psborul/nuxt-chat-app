@@ -81,7 +81,8 @@ export default {
           room: this.room,
           id: 0,
           score: 0,
-          hasTurn: false
+          hasTurn: false,
+          finishedWaiting: false
         };
         this.$socket.emit("checkRoom", user, data => {
           console.log(data + " users in room");
