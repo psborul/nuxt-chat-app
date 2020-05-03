@@ -1,14 +1,27 @@
 <template>
   <div class="chat-wrapper">
-    <div class="chat" ref="chat">
+    <div
+      class="chat"
+      ref="chat"
+    >
       <Message
-        v-for="(message,index) in messages"
+        v-for="(message, index) in messages"
         :key="`message-${index}`"
-        :name="message.name"
-        :text="message.text"
-        :time="message.time"
+        :message="message"
         :owner="message.id === user.id"
       />
+    </div>
+    <div
+      v-if="typingUsers.length"
+      class="chat__typing"
+    >
+      <p
+        v-for="(typingUser, index) in typingUsers"
+        :key="`typingUser-${index}`"
+        class="chat__typing-user"
+      >
+        {{ typingUser.name }} is typing...
+      </p>
     </div>
     <div class="chat__form">
       <ChatForm />
@@ -17,11 +30,14 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
-import Message from "@/components/Message";
-import ChatForm from "@/components/ChatForm";
+import { mapState, mapMutations, mapGetters } from "vuex";
+import Message from "../components/Message";
+import ChatForm from "../components/ChatForm";
 
 export default {
+  data: () => ({
+    typingMessage: ""
+  }),
   components: {
     Message,
     ChatForm
@@ -31,11 +47,10 @@ export default {
       title: `Room ${this.user.room}`
     };
   },
-  methods: {
-    ...mapMutations(["newMessage"])
-  },
+  sockets: {},
   computed: {
-    ...mapState(["user", "messages"])
+    ...mapState(["user", "messages", "users"]),
+    ...mapGetters(["typingUsers"])
   },
   watch: {
     messages() {
@@ -74,5 +89,15 @@ export default {
   padding: 1rem;
   overflow-y: auto;
   color: #000;
+}
+
+.chat__typing {
+  position: absolute;
+  display: flex;
+  bottom: 50px;
+}
+
+.chat__typing-user:not(first-child) {
+  margin-left: 15px;
 }
 </style>

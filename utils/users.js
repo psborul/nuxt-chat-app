@@ -1,4 +1,4 @@
-class Users {
+class UsersDB {
   constructor() {
     this.users = [];
   }
@@ -21,5 +21,5 @@ class Users {
 }
 
 module.exports = () => {
-  return new Users()
+  return new UsersDB()
 }

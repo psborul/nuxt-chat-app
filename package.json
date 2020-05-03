@@ -16,11 +16,15 @@
     "express": "^4.16.4",
     "nuxt": "^2.0.0",
     "sass": "^1.23.7",
+    "sass-loader": "^8.0.2",
     "socket.io": "^2.3.0",
-    "vue-socket.io": "^3.0.7"
+    "vue-socket.io": "^3.0.7",
+    "vuetify": "^2.2.21"
   },
   "devDependencies": {
-    "@nuxtjs/vuetify": "^1.0.0",
+    "@mdi/font": "^5.0.45",
+    "eslint": "^6.8.0",
+    "eslint-plugin-vuetify": "^1.0.0-beta.6",
     "nodemon": "^1.18.9"
   }
 }

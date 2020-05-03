@@ -2,56 +2,69 @@ const app = require('express')();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
-const users = require('../utils/users')();
-const Message = require('../utils/message')();
+const usersDB = require('../utils/users')();
+const Message = require('../models/Message')();
 
 io.on('connection', socket => {
 
   socket.on("createUser", (user, cb) => {
-    users.addUser({
+    usersDB.addUser({
       ...user,
       id: socket.id
     })
+
     cb({ id: socket.id })
   });
 
   socket.on("joinRoom", user => {
-    socket.join(user.room);
-    io.to(user.room).emit('updateUsers', users.getUsersByRoom(user.room));
-    socket.emit('newMessage', new Message('admin', `Hello, ${user.name}`));
+    const { room, name } = user;
+    socket.join(room);
+    io.to(room).emit('updateUsers', usersDB.getUsersByRoom(room));
+    socket.emit('newMessage', new Message('admin', `Hello, ${name}`));
     socket.broadcast
-      .to(user.room)
-      .emit('newMessage', new Message('admin', `User ${user.name} connected to chat`));
+      .to(room)
+      .emit('newMessage', new Message('admin', `User ${name} connected to chat`));
   });
 
   socket.on('createMessage', (data, cb) => {
-    const user = users.getUser(data.id);
+    const { id, msg } = data;
+    const user = usersDB.getUser(id);
     if (user) {
-      io.to(user.room).emit('newMessage', new Message(user.name, data.text, data.id))
+      io.to(user.room).emit('newMessage', new Message(user.name, msg, id))
     }
     cb()
   });
 
-  socket.on('leftChat', (cb) => {
-    const id = socket.id;
-    const user = users.getUser(id);
+  socket.on('setTypingStatus', user => {
+    // add status to DB that new users can see, who is typing at the moment
     if (user) {
-      users.removeUser(id);
-      socket.leave(user.room);
-      io.to(user.room).emit('updateUsers', users.getUsersByRoom(user.room));
-      io.to(user.room).emit('newMessage', new Message('admin', `User ${user.name} left chat`))
+      socket.broadcast
+      .to(user.room)
+      .emit('setTypingStatus', user);
     }
-    cb()
+  })
+
+  socket.on('leftChat', () => {
+    const id = socket.id;
+    const user = usersDB.getUser(id);
+    const { room, name } = user;
+    if (user) {
+      usersDB.removeUser(id);
+      socket.leave(room);
+      io.to(room).emit('updateUsers', usersDB.getUsersByRoom(room));
+      io.to(room).emit('newMessage', new Message('admin', `User ${name} left chat`))
+    }
   });
 
   socket.on('disconnect', () => {
     const id = socket.id;
-    const user = users.getUser(id);
+    const user = usersDB.getUser(id);
+    const { room, name } = user;
     if (user) {
-      users.removeUser(id);
-      socket.leave(user.room);
-      io.to(user.room).emit('updateUsers', users.getUsersByRoom(user.room));
-      io.to(user.room).emit('newMessage', new Message('admin', `User ${user.name} left chat`))
+      usersDB.removeUser(id);
+      socket.leave(room);
+      io.to(room).emit('updateUsers', usersDB.getUsersByRoom(room));
+      io.to(room).emit('newMessage', new Message('admin', `User ${name} left chat`))
     }
   });
 })

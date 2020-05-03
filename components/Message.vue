@@ -1,27 +1,49 @@
 <template>
-  <div>
-    <div v-if="name === 'admin'" class="system">
-      <p class="text-center font-italic">{{ text }}</p>
-    </div>
-    <div v-else class="msg-wrapper">
-      <div class="msg" :class="{owner}">
-        <div class="msg__information">
-          <span class="msg__name">{{ name }}</span>
-          <span class="msg__date">{{ time }}</span>
-        </div>
-        <p class="msg__text">{{ text }}</p>
-      </div>
-    </div>
-  </div>
+  <v-row
+    justify="center"
+    no-gutters
+  >
+    <p
+      v-if="isSystemMessage"
+      class="text-center font-italic system"
+    >{{ message.text }}</p>
+    <v-col
+      v-else
+      class="msg-wrapper"
+    >
+      <v-row
+        no-gutters
+        justify="space-between"
+        class="msg"
+        :class="{owner}"
+      >
+        <v-col>
+          <span class="font-weight-bold">{{ message.name }}</span>
+          <p class="mb-0">{{ message.text }}</p>
+        </v-col>
+        <v-col cols="auto">
+          <span class="msg__date ml-3">{{ message.time }}</span>
+        </v-col>
+      </v-row>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
 export default {
   props: {
-    name: String,
-    text: String,
-    time: String,
-    owner: Boolean
+    message: {
+      type: Object,
+      default: () => {}
+    },
+    owner: {
+      type: Boolean
+    }
+  },
+  computed: {
+    isSystemMessage() {
+      return this.message.name === "admin";
+    }
   }
 };
 </script>
@@ -36,7 +58,7 @@ export default {
   }
 }
 
-.msg-wrapper{
+.msg-wrapper {
   display: flex;
   flex-direction: column;
 }
@@ -53,22 +75,8 @@ export default {
   word-break: break-all;
   margin-bottom: 1rem;
 
-  &__information {
-    display: flex;
-    justify-content: space-between;
-  }
-
-  &__name {
-    font-weight: 700;
-  }
-
   &__date {
     text-decoration: underline;
-    margin-left: 15px;
-  }
-
-  &__text {
-    margin-bottom: 0;
   }
 }
 
