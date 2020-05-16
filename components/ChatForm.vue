@@ -1,45 +1,51 @@
 <template>
-  <v-text-field
-    label="Message..."
-    outlined
-    v-model="msg"
-    @click:append="send"
-    @keydown.enter="send"
-    append-icon="mdi-send-circle-outline"
-  />
+  <v-form
+    ref="form"
+    @submit.prevent="send"
+  >
+    <v-text-field
+      v-model="text"
+      label="Message..."
+      outlined
+      :rules="rules"
+      append-icon="mdi-send-circle-outline"
+      @input="typing"
+      @click:append="send"
+      @blur="resetValidation"
+    />
+  </v-form>
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   data: () => ({
-    msg: "",
-    typingStatus: false
+    text: "",
+    rules: [v => !!v || "Text is required"],
   }),
   computed: {
-    ...mapState(["user"])
+    ...mapGetters(["typingStatus"]),
   },
   methods: {
     ...mapActions(["createMessage", "setTypingStatus"]),
     send() {
-      if (!this.msg.length) return;
-      this.createMessage(this.msg);
-      this.msg = "";
-    }
-  },
-  watch: {
-    msg(val) {
-      if (val) {
-        if (!this.typingStatus) {
-          this.typingStatus = true;
-          this.setTypingStatus(this.typingStatus);
-        }
-      } else {
-        this.typingStatus = false;
-        this.setTypingStatus(this.typingStatus);
+      if (this.$refs.form.validate()) {
+        this.createMessage(this.text);
+        this.text = "";
+
+        this.setTypingStatus(false);
+        this.resetValidation();
       }
-    }
-  }
+    },
+    resetValidation() {
+      this.$refs.form.resetValidation();
+    },
+    typing() {
+      if (!this.typingStatus) {
+        this.setTypingStatus(true);
+      }
+    },
+  },
 };
 </script>

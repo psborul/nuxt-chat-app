@@ -6,7 +6,9 @@
     <p
       v-if="isSystemMessage"
       class="text-center font-italic system"
-    >{{ message.text }}</p>
+    >
+      {{ message.text }}
+    </p>
     <v-col
       v-else
       class="msg-wrapper"
@@ -15,11 +17,13 @@
         no-gutters
         justify="space-between"
         class="msg"
-        :class="{owner}"
+        :class="{ owner }"
       >
         <v-col>
           <span class="font-weight-bold">{{ message.name }}</span>
-          <p class="mb-0">{{ message.text }}</p>
+          <p class="mb-0">
+            {{ message.text }}
+          </p>
         </v-col>
         <v-col cols="auto">
           <span class="msg__date ml-3">{{ message.time }}</span>
@@ -34,17 +38,17 @@ export default {
   props: {
     message: {
       type: Object,
-      default: () => {}
+      default: () => {},
     },
     owner: {
-      type: Boolean
-    }
+      type: Boolean,
+    },
   },
   computed: {
     isSystemMessage() {
       return this.message.name === "admin";
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -84,5 +88,11 @@ export default {
   background: #fff;
   color: #000;
   align-self: flex-end;
+}
+
+@media (max-width: 400px) {
+  .msg {
+    width: 90%;
+  }
 }
 </style>

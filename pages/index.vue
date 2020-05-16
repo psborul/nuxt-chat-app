@@ -9,18 +9,10 @@
         min-width="290"
         color="#424242"
       >
-        <v-snackbar
+        <Snackbar
           v-model="snackbar"
-          :timeout="3000"
-          top
-        >
-          {{ message }}
-          <v-btn
-            dark
-            text
-            @click="snackbar = false"
-          >Close</v-btn>
-        </v-snackbar>
+          :text="message"
+        />
 
         <v-card-title>
           <h2>Login</h2>
@@ -28,30 +20,32 @@
         <v-card-text>
           <v-form
             ref="form"
-            v-model="valid"
+            v-model="isValid"
             lazy-validation
             @submit.prevent="submit"
           >
             <v-text-field
-              v-model="name"
+              v-model="user.name"
               :counter="16"
               :rules="nameRules"
               label="Name"
               required
-            ></v-text-field>
+            />
             <v-text-field
-              v-model="room"
+              v-model="user.room"
               :counter="16"
               :rules="roomRules"
               label="Enter the room"
               required
-            ></v-text-field>
+            />
             <v-btn
-              :disabled="!valid"
+              :disabled="!isValid"
               color="primary"
               class="mt-3"
               type="submit"
-            >Submit</v-btn>
+            >
+              Submit
+            </v-btn>
           </v-form>
         </v-card-text>
       </v-card>
@@ -60,57 +54,54 @@
 </template>
 
 <script>
-import { mapMutations, mapActions } from "vuex";
+import { mapActions } from "vuex";
+import Snackbar from "@/components/Snackbar";
+import messageDict from "@/lib/messageDict";
 
 export default {
-  name: "index",
   layout: "login",
-  head: {
-    title: "Nuxt-chat"
+  components: {
+    Snackbar,
   },
   data: () => ({
-    valid: true,
-    name: "",
-    message: "",
-    room: "",
-    id: null,
+    isValid: true,
+    user: {
+      name: "",
+      room: "",
+      typingStatus: false,
+    },
     nameRules: [
       v => !!v || "Name is required",
-      v => (v && v.length <= 16) || "Name must be less than 16 characters"
+      v => (v && v.length <= 16) || "Name must be less than 16 characters",
     ],
     roomRules: [
       v => !!v || "Enter the room",
-      v => (v && v.length <= 16) || "Room must be less than 16 characters"
+      v => (v && v.length <= 16) || "Room must be less than 16 characters",
     ],
-    snackbar: false
+    snackbar: false,
   }),
+  computed: {
+    message() {
+      const { message } = this.$route.query;
+      return messageDict[message] || "";
+    },
+  },
   mounted() {
-    const { message } = this.$route.query;
-    if (message === "noUser") {
-      this.message = "Enter your name and room";
-    } else if (message === "leftChat") {
-      this.message = "You leaved chat";
-    }
     this.snackbar = !!this.message;
   },
 
   methods: {
-    ...mapMutations(["setUser"]),
-    ...mapActions(["joinRoom"]),
+    ...mapActions(["createUser"]),
     submit() {
       if (this.$refs.form.validate()) {
-        const user = {
-          name: this.name,
-          room: this.room,
-          status: false,
-        };
-        this.$socket.emit("createUser", user, data => {
-          user.id = data.id;
-          this.setUser(user);
-          this.$router.push("/chat");
-        });
+        this.createUser(this.user);
+        this.$router.push("/chat");
       }
-    }
-  }
+    },
+  },
+
+  head: {
+    title: "nuxt-chat-app",
+  },
 };
 </script>

@@ -1,9 +1,6 @@
 <template>
   <div class="chat-wrapper">
-    <div
-      class="chat"
-      ref="chat"
-    >
+    <div ref="chat" class="chat">
       <Message
         v-for="(message, index) in messages"
         :key="`message-${index}`"
@@ -11,10 +8,7 @@
         :owner="message.id === user.id"
       />
     </div>
-    <div
-      v-if="typingUsers.length"
-      class="chat__typing"
-    >
+    <div v-if="typingUsers.length" class="chat__typing">
       <p
         v-for="(typingUser, index) in typingUsers"
         :key="`typingUser-${index}`"
@@ -30,27 +24,19 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapGetters } from "vuex";
-import Message from "../components/Message";
-import ChatForm from "../components/ChatForm";
+import { mapState, mapGetters } from "vuex";
+import Message from "@/components/Message";
+import ChatForm from "@/components/ChatForm";
 
 export default {
-  data: () => ({
-    typingMessage: ""
-  }),
+  layout: "chat",
   components: {
     Message,
-    ChatForm
+    ChatForm,
   },
-  head() {
-    return {
-      title: `Room ${this.user.room}`
-    };
-  },
-  sockets: {},
   computed: {
     ...mapState(["user", "messages", "users"]),
-    ...mapGetters(["typingUsers"])
+    ...mapGetters(["typingUsers"]),
   },
   watch: {
     messages() {
@@ -59,8 +45,13 @@ export default {
           this.$refs.chat.scrollTop = this.$refs.chat.scrollHeight;
         }
       }, 0);
-    }
-  }
+    },
+  },
+  head() {
+    return {
+      title: `Room ${this.user.room}`,
+    };
+  },
 };
 </script>
 

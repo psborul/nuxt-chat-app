@@ -1,8 +1,8 @@
 <template>
-  <v-app style="background: #303030">
+  <v-app style="background: #303030;">
     <v-navigation-drawer
-      app
       v-model="drawer"
+      app
       mobile-break-point="650"
       color="$accent"
     >
@@ -10,16 +10,18 @@
         <v-subheader>Users in room</v-subheader>
 
         <v-list-item
-          v-for="(u, index) in users"
+          v-for="({ name, id }, index) in users"
           :key="`user-${index}`"
           @click.prevent
         >
           <v-list-item-content>
-            <v-list-item-title v-text="u.name"></v-list-item-title>
+            <v-list-item-title v-text="name" />
           </v-list-item-content>
 
           <v-list-item-icon>
-            <v-icon :color="u.id === user.id ? 'primary' : 'grey'">mdi-account-circle-outline</v-icon>
+            <v-icon :color="id === user.id ? 'primary' : 'grey'">
+              mdi-account-circle-outline
+            </v-icon>
           </v-list-item-icon>
         </v-list-item>
       </v-list>
@@ -29,12 +31,14 @@
       app
       color="#424242"
     >
-      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon @click="drawer = !drawer" />
       <v-toolbar-title>
         Room
-        <v-chip color="grey">{{ user.room }}</v-chip>
+        <v-chip color="grey">
+          {{ user.room }}
+        </v-chip>
       </v-toolbar-title>
-      <v-spacer></v-spacer>
+      <v-spacer />
       <v-btn
         icon
         class="mx-1"
@@ -47,7 +51,7 @@
     <v-content>
       <v-container
         fluid
-        style="height: 100%"
+        style="height: 100%;"
       >
         <nuxt />
       </v-container>
@@ -60,7 +64,7 @@ import { mapState, mapMutations, mapActions } from "vuex";
 
 export default {
   data: () => ({
-    drawer: true
+    drawer: true,
   }),
   sockets: {
     updateUsers(users) {
@@ -69,27 +73,21 @@ export default {
     newMessage(msg) {
       this.newMessage(msg);
     },
-    typing(user) {
-      this.addTypingUser(user)
-    },
-    setTypingStatus(user) {
-      this.displayTypingStatus(user);
-    }
   },
   computed: {
-    ...mapState(["user", "users"])
+    ...mapState(["user", "users"]),
   },
   middleware: "auth",
+  created() {
+    this.joinRoom(this.user);
+  },
   methods: {
     ...mapMutations(["updateUsers", "newMessage"]),
-    ...mapActions(["socketEmit", "joinRoom", "leftRoom", "addTypingUser", "displayTypingStatus"]),
+    ...mapActions(["joinRoom", "leftRoom"]),
     exit() {
       this.leftRoom();
       this.$router.push("/?message=leftChat");
-    }
+    },
   },
-  created() {
-    this.joinRoom(this.user);
-  }
 };
 </script>
