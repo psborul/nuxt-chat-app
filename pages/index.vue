@@ -59,6 +59,7 @@ import Snackbar from "@/components/Snackbar";
 import messageDict from "@/lib/messageDict";
 
 export default {
+  name: "Home",
   layout: "login",
   components: {
     Snackbar,

@@ -13,10 +13,10 @@ export const mutations = {
   setUser(state, user) {
     state.user = user;
   },
-  newMessage(state, msg) {
+  SOCKET_newMessage(state, msg) {
     state.messages = [...state.messages, msg];
   },
-  updateUsers(state, users) {
+  SOCKET_updateUsers(state, users) {
     state.users = users;
   },
   clearData(state) {

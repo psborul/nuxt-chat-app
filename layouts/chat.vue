@@ -63,17 +63,10 @@
 import { mapState, mapMutations, mapActions } from "vuex";
 
 export default {
+  name: "ChatLayout",
   data: () => ({
     drawer: true,
   }),
-  sockets: {
-    updateUsers(users) {
-      this.updateUsers(users);
-    },
-    newMessage(msg) {
-      this.newMessage(msg);
-    },
-  },
   computed: {
     ...mapState(["user", "users"]),
   },
@@ -82,7 +75,6 @@ export default {
     this.joinRoom(this.user);
   },
   methods: {
-    ...mapMutations(["updateUsers", "newMessage"]),
     ...mapActions(["joinRoom", "leftRoom"]),
     exit() {
       this.leftRoom();

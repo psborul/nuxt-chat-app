@@ -1,6 +1,9 @@
 <template>
   <div class="chat-wrapper">
-    <div ref="chat" class="chat">
+    <div
+      ref="chat"
+      class="chat"
+    >
       <Message
         v-for="(message, index) in messages"
         :key="`message-${index}`"
@@ -8,7 +11,10 @@
         :owner="message.id === user.id"
       />
     </div>
-    <div v-if="typingUsers.length" class="chat__typing">
+    <div
+      v-if="typingUsers.length"
+      class="chat__typing"
+    >
       <p
         v-for="(typingUser, index) in typingUsers"
         :key="`typingUser-${index}`"
@@ -29,6 +35,7 @@ import Message from "@/components/Message";
 import ChatForm from "@/components/ChatForm";
 
 export default {
+  name: "ChatPage",
   layout: "chat",
   components: {
     Message,
