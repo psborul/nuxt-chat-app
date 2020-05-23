@@ -9,10 +9,10 @@ module.exports = {
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
+      { hid: 'description', name: 'description', content: process.env.npm_package_description || '' },
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
     ],
   },
   /*
@@ -29,17 +29,26 @@ module.exports = {
   */
   plugins: [
     { src: '~/plugins/socket.client.js' },
-    { src: '~/plugins/vuetify.js' }
+    { src: '~/plugins/vuetify.js' },
   ],
   /*
   ** Nuxt.js dev-modules
   */
-  buildModules: [],
+  buildModules: [
+    '@nuxtjs/pwa',
+  ],
   /*
   ** Nuxt.js modules
   */
   modules: [
+    '@nuxtjs/pwa',
   ],
+  manifest: {
+    name: 'Nuxt.js PWA nuxt-chat-app',
+    short_name: 'Nuxt.js PWA',
+    lang: 'en',
+    display: 'standalone',
+  },
   /*
   ** vuetify module configuration
   ** https://github.com/nuxt-community/vuetify-module
@@ -52,6 +61,6 @@ module.exports = {
     ** You can extend webpack config here
     */
     extend(config, ctx) {
-    }
+    },
   },
-}
+};
