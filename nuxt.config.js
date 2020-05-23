@@ -51,6 +51,7 @@ module.exports = {
     name: 'Nuxt.js PWA nuxt-chat-app',
     short_name: 'Nuxt.js PWA',
     start_url: '/',
+    theme_color: '#424242',
   },
   /*
   ** vuetify module configuration
