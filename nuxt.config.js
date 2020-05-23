@@ -50,8 +50,9 @@ module.exports = {
   manifest: {
     name: 'Nuxt.js PWA nuxt-chat-app',
     short_name: 'Nuxt.js PWA',
-    start_url: '/',
+    start_url: 'https://nuxt-chat-app.herokuapp.com/',
     theme_color: '#424242',
+    display: 'standalone',
   },
   /*
   ** vuetify module configuration
