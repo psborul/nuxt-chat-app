@@ -35,7 +35,6 @@ module.exports = {
   ** Nuxt.js dev-modules
   */
   buildModules: [
-    '@nuxtjs/pwa',
   ],
   /*
   ** Nuxt.js modules
@@ -43,11 +42,15 @@ module.exports = {
   modules: [
     '@nuxtjs/pwa',
   ],
+
+  icon: {
+    iconSrc: './static/favicon.ico',
+  },
+
   manifest: {
     name: 'Nuxt.js PWA nuxt-chat-app',
     short_name: 'Nuxt.js PWA',
-    lang: 'en',
-    display: 'standalone',
+    start_url: '/',
   },
   /*
   ** vuetify module configuration
