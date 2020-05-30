@@ -5,7 +5,7 @@ export const state = () => ({
 });
 
 export const getters = {
-  typingUsers: ({ users, user}) => users.filter(({ typingStatus, id }) => typingStatus && user.id !== id),
+  typingUsers: ({ users, user }) => users.filter(({ typingStatus, id }) => typingStatus && user.id !== id),
   typingStatus: ({ user }) => user.typingStatus,
 };
 
@@ -76,5 +76,13 @@ export const actions = {
     });
 
     commit("setUser", { id, ...user });
+  },
+  SOCKET_reconnect({ state, dispatch }) {
+    const { user } = state;
+    if (Object.values(user).length) {
+      const { id, ...userInfo } = user;
+      dispatch('createUser', userInfo);
+      dispatch('joinRoom');
+    }
   },
 };

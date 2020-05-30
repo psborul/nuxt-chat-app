@@ -4,7 +4,7 @@ import 'vuetify/dist/vuetify.min.css';
 import '@mdi/font/css/materialdesignicons.css';
 import colors from "vuetify/es5/util/colors";
 
-Vue.use(Vuetify)
+Vue.use(Vuetify);
 
 export default ctx => {
   const vuetify = new Vuetify({
@@ -22,11 +22,11 @@ export default ctx => {
           warning: colors.amber.base,
           error: colors.deepOrange.accent4,
           success: colors.green.accent3,
-        }
-      }
-    }
-  })
+        },
+      },
+    },
+  });
 
-  ctx.app.vuetify = vuetify
-  ctx.$vuetify = vuetify.framework
-}
+  ctx.app.vuetify = vuetify;
+  ctx.$vuetify = vuetify.framework;
+};

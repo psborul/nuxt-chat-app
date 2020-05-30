@@ -15,7 +15,7 @@ io.on("connection", (socket) => {
     return { id: socket.id };
   });
 
-  socket.on("joinRoom", ({ name, room}) => {
+  socket.on("joinRoom", ({ name, room }) => {
     socket.join(room);
     io.to(room).emit("updateUsers", usersDB.getUsersByRoom(room));
     socket.emit("newMessage", new Message("admin", `Hello, ${name}`));
