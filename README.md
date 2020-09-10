@@ -1,6 +1,6 @@
 # nuxt-chat-app
 
-> Vue.js, Nuxt.js, Node.js (Express), Vue-Socket.IO (Socket.IO), Vuetify.js
+> Vue.js, Nuxt.js, Node.js (Express), Vue-Socket.IO (Socket.IO), Vuetify.js, PWA
 
 ## Build Setup
 
