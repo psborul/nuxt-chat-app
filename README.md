@@ -20,7 +20,8 @@ $ npm run generate
 ```
 ## Tutorial
 
-> https://medium.com/@stfalconcom/chat-app-creation-using-vue-js-nuxt-js-node-js-socket-io-vue-socket-io-vuetify-js-technologies-5f15f0781476
+> https://medium.com/@stfalconcom/chat-app-creation-using-vue-js-nuxt-js-node-js-socket-io-vue-socket-io-vuetify-js-technologies-5f15f0781476 p.1
+> https://psborul.medium.com/update-for-chat-app-creation-using-vue-js-nuxt-js-node-js-socket-io-vuetify-js-technologies-9b735754865 p.2
 
 ## Demo
 
