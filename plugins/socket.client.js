@@ -4,7 +4,6 @@ import store from '../store';
 import io from 'socket.io-client';
 
 const socketInstance = io('/', {
-  transports: ['websocket'],
   rejectUnauthorized: false,
   reconnection: true,
   reconnectionDelay: 1000,
