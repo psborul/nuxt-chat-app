@@ -63,7 +63,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
-            dist
+            dist/index.html
             .nuxt
           key: ${{ runner.os }}-nuxt-build-${{ hashFiles('dist') }}
           restore-keys: |
