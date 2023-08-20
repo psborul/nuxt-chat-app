@@ -3,10 +3,11 @@ const { Nuxt, Builder } = require('nuxt');
 const { app, server } = require('./app');
 
 const config = require('../nuxt.config.js');
-config.dev = process.env.NODE_ENV === 'development';
+const dev = process.env.NODE_ENV === 'development';
+config.dev = dev;
 
 async function start() {
-  const nuxt = new Nuxt(config);
+  const nuxt = new Nuxt({ ...config, dev});
 
   const { host, port } = nuxt.options.server;
 
