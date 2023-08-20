@@ -3,7 +3,7 @@ const { Nuxt, Builder } = require('nuxt');
 const { app, server } = require('./app');
 
 const config = require('../nuxt.config.js');
-config.dev = process.env.NODE_ENV !== 'production';
+config.dev = process.env.NODE_ENV === 'development';
 
 async function start() {
   const nuxt = new Nuxt(config);
