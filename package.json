@@ -1,26 +1,28 @@
 {
-  "name": "nuxt-chat-app",
-  "version": "1.0.0",
-  "description": "Simple chat on Nuxt.js",
-  "author": "Petr Borul",
-  "private": false,
+  "name": "nuxt-app",
+  "type": "module",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development nodemon server/index.js --watch server",
     "build": "nuxt build",
-    "start": "cross-env NODE_ENV=production node server/index.js",
+    "dev": "nuxt dev",
     "generate": "nuxt generate",
-    "heroku-postbuild": "npm run build"
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "start": "node .output/server/index.mjs"
   },
   "dependencies": {
-    "cross-env": "^5.2.0",
-    "express": "^4.16.4",
-    "nuxt": "^2.0.0",
-    "sass": "^1.23.7",
-    "socket.io": "^2.3.0",
-    "vue-socket.io": "^3.0.7"
+    "@nuxt/eslint": "^1.4.1",
+    "@types/ws": "^8.18.1",
+    "eslint": "^9.29.0",
+    "jsonwebtoken": "^9.0.2",
+    "nuxt": "^3.17.5",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "vue": "^3.5.16",
+    "vue-router": "^4.5.1",
+    "ws": "^8.18.2"
   },
   "devDependencies": {
-    "@nuxtjs/vuetify": "^1.0.0",
-    "nodemon": "^1.18.9"
+    "@types/jsonwebtoken": "^9.0.10",
+    "sass": "^1.89.2"
   }
 }
