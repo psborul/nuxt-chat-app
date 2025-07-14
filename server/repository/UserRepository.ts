@@ -23,6 +23,10 @@ class UserRepository {
     return Array.from(this.users.values()).find(user => user.email === email);
   }
 
+  findByUsername(username: string): User | undefined {
+    return Array.from(this.users.values()).find(user => user.username === username);
+  }
+
   setOnline(id: string, online: boolean): void {
     const user = this.users.get(id);
     if (user) {

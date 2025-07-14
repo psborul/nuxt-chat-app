@@ -2,18 +2,20 @@
   <div class="register-page">
     <form class="register-form" @submit.prevent="handleAuth">
       <img class="logo" src="../assets/LOGOTRANSSMALL.png" alt="">
-      <h2 class="register-form__title">Sign in</h2>
+      <h2 class="register-form__title">Create Account</h2>
 
       <Textfield v-model="email" autocomplete="email" class="register-form__field" label="Email" type="email" required />
 
-      <Textfield v-model="password" autocomplete="current-password" class="register-form__field" label="Password" type="password" required />
+      <Textfield v-model="username" autocomplete="username" class="register-form__field" label="Username" required />
+
+      <Textfield v-model="password" autocomplete="new-password" class="register-form__field" label="Password" type="password" required />
 
       <Button type="submit" variant="primary" class="register-form__submit">
-        Sign in
+        Sign Up
       </Button>
 
-      New to Chat? Create an account
-      <NuxtLink to="/registration">Register</NuxtLink>
+      Already have an account?
+      <NuxtLink to="/login">Login</NuxtLink>
     </form>
   </div>
 </template>
@@ -26,6 +28,7 @@ import Storage from '~/services/Storage';
 const router = useRouter();
 
 const email = ref('');
+const username = ref('');
 const password = ref('');
 
 const { addToast, clearToasts } = useToast();
@@ -33,18 +36,18 @@ const { addToast, clearToasts } = useToast();
 const handleAuth = async () => {
   const formData = {
     email: email.value,
+    username: username.value,
     password: password.value
   };
 
   try {
-    const user = await NetworkService.post('/api/login', formData);
+    const user = await NetworkService.post('/api/registration', formData);
     clearToasts();
     Storage.set(STORAGE_USER_KEY, user);
     router.push({ name: ROUTE.ROOMS });
   } catch (err: any) {
     addToast(err.message, 'error');
-
-    console.error('Login failed:', err.message);
+    console.error('Registration failed:', err.message);
   }
 };
 
@@ -101,6 +104,7 @@ definePageMeta({
     }
   }
 }
+
 
 .logo {
   width: 200px;

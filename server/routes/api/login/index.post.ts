@@ -1,29 +1,53 @@
-// import { signToken } from '~/server/utils/jwt';
-// import { verifyPassword } from '~/server/utils/password';
+import type { H3Event } from 'h3'
+import UserRepository from '~/server/repository/UserRepository'
+import { signToken } from '~/server/utils/jwt'
+import { verifyPassword } from '~/server/utils/helpers'
 
-// const users = [
-//   {
-//     id: 1,
-//     email: 'user@example.com',
-//     passwordHash: '...',
-//     passwordSalt: '...',
-//     name: 'Demo User'
-//   }
-// ];
+type RequestBody = {
+  email: string
+  password: string
+}
 
-// export default defineEventHandler(async (event) => {
-//   const { email, password } = await readBody(event);
-//   const user = users.find((u) => u.email === email);
-//   if (!user) return { error: 'User not found' };
+type Response = {
+  token: string
+  id: string
+  email: string
+  username: string
+}
 
-//   const isValid = await verifyPassword(password, user.passwordHash, user.passwordSalt);
-//   if (!isValid) return { error: 'Invalid password' };
+export default defineEventHandler(async (event: H3Event): Promise<Response> => {
+  const { email, password } = await readBody<RequestBody>(event)
 
-//   const token = signToken({ id: user.id, email: user.email });
+  if (!email || !password) {
+    throw createError({ statusCode: 400, statusMessage: 'Missing fields' })
+  }
 
-//   return { token, user: { id: user.id, email: user.email, name: user.name } };
+  const user = UserRepository.findByEmail(email)
+  if (!user) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'There is no registered user with this email',
+    })
+  }
 
-//   // Option 2 (for SSR): Set cookie
-//   // setCookie(event, 'auth_token', token, { httpOnly: true, path: '/', maxAge: 60 * 60 * 24 * 7 });
-//   // return { user: { id: user.id, email: user.email } };
-// });
+  const isValid = await verifyPassword(
+    password,
+    user.passwordHash,
+    user.passwordSalt
+  )
+
+  if (!isValid) {
+    throw createError({ statusCode: 401, statusMessage: 'Invalid password' })
+  }
+
+  const token = signToken({ id: user.id, email: user.email })
+
+  return {
+    token,
+    id: user.id,
+    email: user.email,
+    username: user.username,
+  }
+})
+
+//TODO: maybe to use cookie

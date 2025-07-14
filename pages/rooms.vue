@@ -8,22 +8,12 @@
     </header>
 
     <RoomsComponent
-      class="rooms-table"
-      :rooms="rooms"
-      @join="handleJoin"
-      @delete="handleDelete"
-      @open-chat="handleOpenChat"
-      @leave="handleLeave"
-    />
+class="rooms-table" :rooms="rooms" @join="handleJoin" @delete="handleDelete"
+      @open-chat="handleOpenChat" @leave="handleLeave" />
 
     <form class="rooms-form" @submit.prevent="handleCreateRoom">
-      <Textfield
-        v-model="roomName"
-        placeholder="Enter new room name"
-        class="room-name-input"
-        required
-      />
-      <Button type="secondary" class="create-btn" :disabled="!roomName.trim()">
+      <Textfield v-model="roomName" placeholder="Enter new room name" class="room-name-input" required />
+      <Button type="secondary" class="create-btn">
         Create Room
       </Button>
     </form>
@@ -52,8 +42,12 @@ const getRooms = async () => {
 };
 
 const handleOpenChat = (roomId: string) => {
-  Storage.set(STORAGE_USER_KEY, { ...user.value, roomId });
-  router.push({ name: ROUTE.CHAT });
+  console.log(roomId)
+  router.push({
+    name: ROUTE.CHAT, params: {
+      id: roomId
+    }
+  });
 };
 
 const handleLogout = () => {
@@ -65,7 +59,6 @@ const handleCreateRoom = async () => {
   if (!roomName.value.trim()) return;
   await NetworkService.post("/api/rooms", {
     name: roomName.value.trim(),
-    userId: user.value.id,
   });
   roomName.value = "";
   getRooms();
@@ -73,15 +66,13 @@ const handleCreateRoom = async () => {
 
 const handleDelete = async (roomId: string) => {
   await NetworkService.post("/api/rooms/delete", {
-    userId: user.value.id,
     roomId,
   });
   getRooms();
 };
 
-const handleLeave = async ({ roomId }: { roomId: string }) => {
+const handleLeave = async ({ roomId }: { roomId: string; }) => {
   await NetworkService.post("/api/rooms/leave", {
-    userId: user.value.id,
     roomId,
   });
   getRooms();
@@ -96,7 +87,6 @@ const handleJoin = async ({
 }) => {
   if (user.value.id !== createdBy) {
     await NetworkService.post("/api/rooms/join", {
-      userId: user.value.id,
       roomId,
     });
   }
@@ -108,121 +98,153 @@ definePageMeta({
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .rooms-page {
-  background: #f5f7fa;
-  color: #222;
-  max-width: 900px;
-  max-height: 100vh;
-  margin: 0 auto;
-  padding: 24px 16px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  font-family: "Roboto", sans-serif;
-  padding-top: 80px; /* to offset fixed header */
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: var(--bg);
+  color: var(--text);
 }
 
 .rooms-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 60px;
-  background: #ffffff;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 24px;
-  box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
-  z-index: 1000;
-}
-
-.greeting {
-  font-weight: 600;
-  font-size: 1.8rem;
-  margin: 0;
-  color: #333;
-}
-
-.logout-btn {
-  padding: 8px 20px;
-  font-weight: 600;
-  background-color: #1976d2;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.25s ease;
-}
-
-.logout-btn:hover {
-  background-color: #1565c0;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .rooms-table {
-  background: white;
-  border-radius: 10px;
-  padding: 16px;
-  box-shadow: 0 3px 8px rgb(0 0 0 / 0.12);
-  max-height: 400px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #bbb #f5f7fa;
-}
-
-.rooms-table::-webkit-scrollbar {
-  width: 8px;
-}
-
-.rooms-table::-webkit-scrollbar-thumb {
-  background-color: #bbb;
-  border-radius: 4px;
+  width: 100%;
 }
 
 .rooms-form {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
-  align-items: center;
-  justify-content: flex-start;
+  margin-top: 1rem;
 }
 
 .room-name-input {
-  flex: 1 1 auto;
+  flex: 1 1 250px;
 }
 
 .create-btn {
-  min-width: 120px;
+  flex-shrink: 0;
+}
+
+.table-container {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  overflow-x: auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr) minmax(200px, 1fr);
+  gap: 12px;
+  padding: 12px 16px;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.header {
+  background-color: var(--surface-hover);
   font-weight: 600;
-  cursor: pointer;
-  background-color: #1976d2;
-  color: white;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 2px solid var(--border);
+}
+
+.row {
+  background-color: var(--surface);
+}
+
+.row>div {
+  word-break: break-word;
+}
+
+.action-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.btn {
+  padding: 6px 12px;
   border: none;
-  border-radius: 6px;
-  padding: 10px 20px;
-  transition: background-color 0.25s ease;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  color: white;
+  transition: background 0.2s ease;
+  text-align: center;
 }
 
-.create-btn:hover:not(:disabled) {
-  background-color: #1565c0;
+.btn.join {
+  background-color: var(--color-primary);
 }
 
-button[type="secondary"] {
-  background-color: #e0e0e0;
-  border: 1px solid #ccc;
-  color: #333;
-  padding: 10px 20px;
-  border-radius: 6px;
-  transition: background-color 0.25s ease, border-color 0.25s ease;
+.btn.join:hover {
+  background-color: color-mix(in srgb, var(--color-primary) 90%, black);
 }
 
-button[type="secondary"]:hover:not(:disabled) {
-  background-color: #d5d5d5;
-  border-color: #bbb;
+.btn.leave {
+  background-color: #ff9800;
 }
 
-button:disabled {
-  opacity: 0.5;
-  cursor: default;
+.btn.leave:hover {
+  background-color: #f57c00;
+}
+
+.btn.open {
+  background-color: #4caf50;
+}
+
+.btn.open:hover {
+  background-color: #43a047;
+}
+
+.btn.danger {
+  background-color: var(--color-error);
+}
+
+.btn.danger:hover {
+  background-color: color-mix(in srgb, var(--color-error) 90%, black);
+}
+
+@media (max-width: 768px) {
+  .grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .header {
+    display: none;
+  }
+
+  .row {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .row>div {
+    width: 100%;
+  }
+
+  .action-group {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .btn {
+    flex: 1 1 48%;
+  }
 }
 </style>

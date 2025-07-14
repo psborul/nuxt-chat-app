@@ -2,9 +2,9 @@ import { broadcastToRoom, joinRoom, leaveRoom } from './room';
 import { uuid } from '~/utils/helpers';
 import type { SocketAction } from '~/types';
 import { MESSAGE_TYPE, MESSAGE_ACTION } from '~/services/SocketService';
-import UserRepository from '~/repository/UserRepository';
-import PeerRepository from '~/repository/PeerRepository';
-import MessageRepository from '~/repository/MessageRepository';
+import UserRepository from '~/server/repository/UserRepository';
+import PeerRepository from '~/server/repository/PeerRepository';
+import MessageRepository from '~/server/repository/MessageRepository';
 
 export default defineWebSocketHandler({
   open(peer) {

@@ -1,4 +1,4 @@
-import MessageRepository from '~/repository/MessageRepository';
+import MessageRepository from '~/server/repository/MessageRepository';
 
 type QueryParams = {
   roomId?: string;

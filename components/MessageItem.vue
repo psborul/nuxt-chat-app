@@ -3,7 +3,7 @@
     :class="{
       message: true,
       system: props.type === MESSAGE_TYPE.SYSTEM,
-      other: props.self && props.type !== MESSAGE_TYPE.SYSTEM,
+      other: !props.self && props.type !== MESSAGE_TYPE.SYSTEM,
     }"
   >
     {{ props.content }}
@@ -23,6 +23,8 @@ const props = defineProps<{
   content: string;
   createdAt: number;
 }>();
+
+console.log(props)
 </script>
 
 <style lang="scss" scoped>
@@ -57,5 +59,3 @@ const props = defineProps<{
   background: #cccccc;
 }
 </style>
-
-<style src="../assets//main.scss"></style>

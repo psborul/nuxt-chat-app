@@ -26,37 +26,37 @@
 
       <!-- Action Buttons -->
       <div class="action-group">
-        <button
+        <Button
           v-if="!room.joined && !room.isOwner"
           class="btn join"
           @click="$emit('join', { roomId: room.id, createdBy: room.createdBy })"
         >
           Join
-        </button>
+        </Button>
 
-        <button
+        <Button
           v-if="room.joined && !room.isOwner"
           class="btn leave"
           @click="$emit('leave', { roomId: room.id, createdBy: room.createdBy })"
         >
           Leave
-        </button>
+        </Button>
 
-        <button
+        <Button
           v-if="room.joined"
           class="btn open"
           @click="$emit('openChat', room.id)"
         >
           Open Chat
-        </button>
+        </Button>
 
-        <button
+        <Button
           v-if="room.isOwner"
-          class="btn danger"
+          type="danger"
           @click="$emit('delete', room.id)"
         >
           Remove
-        </button>
+        </Button>
       </div>
     </div>
   </div>
@@ -80,7 +80,6 @@ function formatDate(date: string | Date) {
 .table-container {
   max-width: 100%;
   margin: auto;
-  font-family: 'Roboto', sans-serif;
   font-size: 14px;
   color: #333;
   border: 1px solid #e0e0e0;
@@ -146,13 +145,5 @@ function formatDate(date: string | Date) {
 }
 .btn.open:hover {
   background-color: #43a047;
-}
-
-.btn.danger {
-  background-color: #f44336;
-  color: white;
-}
-.btn.danger:hover {
-  background-color: #e53935;
 }
 </style>

@@ -10,14 +10,20 @@
     </aside>
     <main class="chat-page__main">
       <header class="header">
-        Room: {{ user?.roomId }}
+        Room: {{ roomId }}
         <Button type="primary" @click.prevent="handleLeave">LEAVE</Button>
       </header>
       <div class="message-window">
         <div class="message-view">
           <MessageItem
-v-for="message in messages" :id="message.id" :key="message.id" :content="message.content"
-            :created-at="message.createdAt" :self="message.userId === user?.id" :type="message.type" />
+            v-for="message in messages"
+            :id="message.id"
+            :key="message.id"
+            :content="message.content"
+            :created-at="message.createdAt"
+            :self="message.userId === user?.id"
+            :type="message.type || ''"
+          />
         </div>
 
         <form class="form" @submit.prevent="handleSubmit">
@@ -39,6 +45,9 @@ import Storage from "~/services/Storage";
 import type { Message, User } from "~/types";
 
 const router = useRouter();
+const { params } = useRoute();
+
+const roomId = params.id as string;
 
 const text = ref<string>("");
 const user = ref<User>();
@@ -47,13 +56,13 @@ const messages = ref<Message[]>([]);
 
 const fetchUsers = async () => {
   users.value = await NetworkService.get(
-    `/api/users?roomId=${user?.value?.roomId}`
+    `/api/users?roomId=${roomId}`
   );
 };
 
 const fetchMessages = async () => {
   messages.value = await NetworkService.get(
-    `/api/messages?roomId=${user?.value?.roomId}`
+    `/api/messages?roomId=${roomId}`
   );
 };
 
@@ -61,7 +70,7 @@ let socketService: SocketService;
 
 onMounted(async () => {
   const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-  const host = window.location.host; // e.g., localhost:3000 or myapp.vercel.app
+  const host = window.location.host;
   const socketUrl = `${protocol}://${host}/ws/socket`;
 
   socketService = new SocketService(socketUrl);
@@ -69,17 +78,15 @@ onMounted(async () => {
   user.value = Storage.get<User>(STORAGE_USER_KEY);
 
   fetchMessages();
-
   fetchUsers();
 
   socketService.connect();
 
   socketService.emitter.$on(SOCKET_EVENT_TYPE.OPEN, () => {
     if (!user.value) return;
-
     socketService.joinRoom({
       userId: user.value.id,
-      roomId: user.value.roomId,
+      roomId: roomId,
     });
   });
 
@@ -93,12 +100,10 @@ onMounted(async () => {
 
 const handleLeave = () => {
   if (!user.value) return;
-
   socketService.leaveRoom({
-    roomId: user.value.roomId,
+    roomId: roomId,
     userId: user.value.id,
   });
-
   router.push({ name: ROUTE.ROOMS });
 };
 
@@ -111,9 +116,8 @@ const handleSubmit = () => {
   socketService.sendMessage({
     userId: user.value?.id,
     message: text.value,
-    roomId: user.value?.roomId,
+    roomId: roomId,
   });
-
   text.value = "";
 };
 
@@ -126,6 +130,8 @@ definePageMeta({
 .chat-page {
   display: flex;
   height: 100vh;
+  background-color: var(--bg);
+  color: var(--text);
 
   &__main {
     width: 100%;
@@ -135,26 +141,29 @@ definePageMeta({
 }
 
 .sidebar {
-  background-color: #3a3a3a;
-  color: #fff;
+  background-color: var(--surface-hover);
+  color: var(--text);
   padding: 10px;
+  border-right: 1px solid var(--border);
+  min-width: 180px;
 }
 
 .header {
   padding: 5px 15px;
   display: flex;
   justify-content: space-between;
-  background-color: #252934;
-  color: #fff;
+  background-color: var(--surface);
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
 }
 
 .message-window {
   width: 100%;
   padding: 20px;
   height: 100%;
-  background: #424242;
-  border: 1px solid #2e2e2e;
-  color: white;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
   font-size: 18px;
   font-style: italic;
   display: flex;
@@ -165,6 +174,8 @@ definePageMeta({
 .message-view {
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  max-height: 100%;
 }
 
 .form {
@@ -178,6 +189,18 @@ definePageMeta({
 
   &__input {
     width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .chat-page {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    order: 2;
+    border-right: none;
+    border-top: 1px solid var(--border);
   }
 }
 </style>

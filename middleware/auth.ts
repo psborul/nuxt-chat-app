@@ -10,7 +10,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
   //   return navigateTo("/" + ROUTE.CHAT);
   // }
 
-  if (!user && to.name !== ROUTE.LOGIN) {
+  if (!user && ![ROUTE.LOGIN, ROUTE.REGISTRATION].includes(to.name as string)) {
     return navigateTo('/login');
   }
 });

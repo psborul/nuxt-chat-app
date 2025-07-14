@@ -8,7 +8,8 @@ export const WS_STATE = {
 export const STORAGE_USER_KEY = "user";
 
 export const ROUTE = {
-  CHAT: "chat",
+  CHAT: "chat-id",
   LOGIN: "login",
-  ROOMS: "rooms"
+  ROOMS: "rooms",
+  REGISTRATION: "registration"
 };

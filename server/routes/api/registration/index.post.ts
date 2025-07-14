@@ -1,22 +1,41 @@
-import UserRepository from '~/repository/UserRepository';
-import { hashPassword } from '~/utils/helpers';
-import { signToken } from '~/utils/jwt';
+import type { H3Event } from 'h3'
+import UserRepository from '~/server/repository/UserRepository'
+import { hashPassword } from '~/server/utils/helpers'
+import { signToken } from '~/server/utils/jwt'
 
-export default defineEventHandler(async (event) => {
-  const body = await readBody(event);
-  const { username, email, password } = body;
+type RequestBody = {
+  username: string
+  email: string
+  password: string
+}
+
+type Response = {
+  token: string
+  id: string
+  email: string
+  username: string
+}
+
+export default defineEventHandler(async (event: H3Event): Promise<Response> => {
+  const body = await readBody<RequestBody>(event)
+
+  const { username, email, password } = body
 
   if (!username || !email || !password) {
-    return sendError(event, createError({ statusCode: 400, message: 'Missing fields' }));
+    throw createError({ statusCode: 400, message: 'Missing fields' })
   }
 
-  const existing = UserRepository.findByEmail(email);
-  if (existing) {
-    //TODO: Maybe to rework this for error messages
-    return sendError(event, createError({ statusCode: 409, statusMessage: 'Email already taken' }));
+  const existingEmail = UserRepository.findByEmail(email)
+  if (existingEmail) {
+    throw createError({ statusCode: 409, statusMessage: 'Email already taken' })
   }
 
-  const { hash, salt } = await hashPassword(password);
+  const existingUsername = UserRepository.findByUsername(username)
+  if (existingUsername) {
+    throw createError({ statusCode: 409, statusMessage: 'Username already taken' })
+  }
+
+  const { hash, salt } = await hashPassword(password)
 
   const newUser = UserRepository.create({
     username,
@@ -24,14 +43,18 @@ export default defineEventHandler(async (event) => {
     passwordHash: hash,
     passwordSalt: salt,
     online: false
-  });
+  })
 
-  const token = signToken({ id: newUser.id, email: newUser.email, username: newUser.username });
+  const token = signToken({
+    id: newUser.id,
+    email: newUser.email,
+    username: newUser.username
+  })
 
   return {
     token,
     id: newUser.id,
     username: newUser.username,
     email: newUser.email,
-  };
-});
+  }
+})

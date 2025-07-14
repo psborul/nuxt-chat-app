@@ -1,5 +1,5 @@
-import MembershipRepository from '~/repository/MembershipRepository';
-import RoomRepository from '~/repository/RoomRepository';
+import MembershipRepository from '~/server/repository/MembershipRepository';
+import RoomRepository from '~/server/repository/RoomRepository';
 
 type BodyParams = {
   roomId: string;
@@ -8,8 +8,9 @@ type BodyParams = {
 
 export default defineEventHandler(async (event) => {
   const body = await readBody<BodyParams>(event);
+  const { id: userId } = getUserFromToken(event);
 
-  const { userId, roomId } = body;
+  const { roomId } = body;
 
   const isOwner = MembershipRepository.isOwner(roomId, userId);
 

@@ -1,5 +1,5 @@
-import MembershipRepository from "~/repository/MembershipRepository";
-import UserRepository from "~/repository/UserRepository";
+import MembershipRepository from "~/server/repository/MembershipRepository";
+import UserRepository from "~/server/repository/UserRepository";
 
 type QueryParams = {
   roomId?: string;

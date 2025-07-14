@@ -15,7 +15,7 @@ export type RoomData = {
   name: string;
   isPrivate: boolean;
   createdBy: string;
-  createdAt: Date;
+  createdAt: string;
 };
 
 export type MessageData = {
@@ -23,14 +23,14 @@ export type MessageData = {
   roomId: string;
   userId: string;
   content: string;
-  createdAt: Date;
+  createdAt: string;
 };
 
 export type MembershipData = {
   userId: string;
   roomId: string;
   role: Role;
-  joinedAt: Date;
+  joinedAt: string;
 };
 
 export type PeerData = {
@@ -72,7 +72,7 @@ export class Room {
   public name: string;
   public isPrivate: boolean = false;
   public createdBy: string;
-  public createdAt: Date;
+  public createdAt: string;
 
   constructor({ id, name, isPrivate, createdBy, createdAt }: RoomData) {
     this.id = id;
@@ -88,7 +88,7 @@ export class Message {
   public roomId: string;
   public userId: string;
   public content: string;
-  public createdAt: Date;
+  public createdAt: string;
 
   constructor({ id, roomId, userId, content, createdAt }: MessageData) {
     this.id = id;
@@ -103,7 +103,7 @@ export class Membership {
   public userId: string;
   public roomId: string;
   public role: Role = "member";
-  public joinedAt: Date;
+  public joinedAt: string;
 
   constructor({ userId, roomId, role, joinedAt }: MembershipData) {
     this.userId = userId;

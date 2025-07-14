@@ -1,4 +1,4 @@
-import MembershipRepository from '~/repository/MembershipRepository';
+import MembershipRepository from "~/server/repository/MembershipRepository";
 
 type BodyParams = {
   roomId: string;
@@ -7,12 +7,13 @@ type BodyParams = {
 
 export default defineEventHandler(async (event) => {
   const body = await readBody<BodyParams>(event);
+  const { id: userId } = getUserFromToken(event);
 
-  const { userId, roomId } = body;
+  const { roomId } = body;
 
   const isExist = MembershipRepository.hasUserInRoom(userId, roomId);
   if (!isExist) {
-    throw new Error("USER IS NOT IN ROOMs")
+    throw new Error("USER IS NOT IN ROOMs");
   }
 
   MembershipRepository.remove(userId, roomId);

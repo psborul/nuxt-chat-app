@@ -13,7 +13,7 @@ export class RoomRepository {
     isPrivate: boolean;
   }) {
     const id = uuid();
-    const createdAt = new Date();
+    const createdAt = new Date().toISOString();
 
     this.rooms.set(
       id,

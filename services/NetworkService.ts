@@ -1,3 +1,5 @@
+import Storage from "~/services/Storage";
+
 class NetworkService {
   url;
   constructor() {
@@ -5,17 +7,27 @@ class NetworkService {
   }
 
   async get(url: string) {
+    const user = Storage.get(STORAGE_USER_KEY);
     const response = await fetch(url, {
       method: "GET",
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+      },
     });
 
     return await response.json();
   }
 
   async post(url: string, payload: any) {
+    const user = Storage.get(STORAGE_USER_KEY);
+
     const response = await fetch(url, {
       method: "POST",
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        "Content-Type": "application/json",
+        // REPLACE ADDING TOKEN SOMEWHERE
+        Authorization: user ? `Bearer ${user.token}`: "",
+      },
       body: JSON.stringify(payload),
     });
 
@@ -23,7 +35,8 @@ class NetworkService {
 
     if (!response.ok) {
       // use server error message if present
-      const message = json.statusMessage || `Request failed with status ${response.status}`;
+      const message =
+        json.statusMessage || `Request failed with status ${response.status}`;
       throw new Error(message);
     }
 
