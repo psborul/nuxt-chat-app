@@ -1,109 +1,116 @@
-import { broadcastToRoom, joinRoom, leaveRoom } from './room';
-import { uuid } from '~/utils/helpers';
-import type { SocketAction } from '~/types';
-import { MESSAGE_TYPE, MESSAGE_ACTION } from '~/services/SocketService';
-import UserRepository from '~/server/repository/UserRepository';
-import PeerRepository from '~/server/repository/PeerRepository';
-import MessageRepository from '~/server/repository/MessageRepository';
+import { defineWebSocketHandler } from "h3";
+import {
+  broadcastSystemMessage,
+  broadcastToRoom,
+  joinRoom,
+  leaveRoom,
+} from "./room";
+import { uuid } from "~/utils/helpers";
+import UserRepository from "~/server/repository/UserRepository";
+import PeerRepository from "~/server/repository/PeerRepository";
+import MessageRepository from "~/server/repository/MessageRepository";
+import { MESSAGE_TYPE, MESSAGE_ACTION } from "~/services/SocketService";
+import type { TokenPayload, SocketAction } from "./types";
 
 export default defineWebSocketHandler({
   open(peer) {
-    console.log('[ws] client connected');
-    PeerRepository.add(peer);
+    console.log("[ws] client connected");
+
+    const reqUrl = peer.websocket.url || "";
+    const token = new URLSearchParams(reqUrl.split("?")[1]).get("token");
+
+    if (!token) {
+      peer.close(4001, "Missing token");
+      return;
+    }
+
+    try {
+      const decoded = verifyToken(token) as TokenPayload;
+      console.log(decoded);
+
+      peer.context.user = decoded; // Save decoded user to peer context
+      PeerRepository.add(peer);
+
+      console.log("✅ User connected:", decoded.username);
+    } catch (err) {
+      console.warn("❌ Invalid token");
+      peer.close(4002, "Invalid token");
+    }
   },
 
   message(peer, message) {
-    const text = message.text();
-    console.log('[ws] message:', text);
-
     try {
-      const data: SocketAction = JSON.parse(text);
-      const user = UserRepository.findById(data.userId)
-
-      if (!user) {
-        throw new Error("There is no such user")
+      if (!peer.context.user) {
+        peer.close(4003, "Unauthorized");
+        return;
       }
 
+      const raw = message.text();
+      const data: SocketAction = JSON.parse(raw);
+
+      const user = UserRepository.findById(peer.context.user.id);
+      if (!user) throw new Error("Unauthorized peer");
+
+      const userId = user.id;
+
       if (data.type === MESSAGE_ACTION.JOIN && data.roomId) {
-        joinRoom({
-          peer,
-          roomId: data.roomId,
-          userId: data.userId
-        });
+        joinRoom({ peer, roomId: data.roomId, userId });
 
-        broadcastToRoom({
-          content: {
-            content: `${user.username} joined channel`,
-            type: MESSAGE_TYPE.SYSTEM,
-            createdAt: Date.now(),
-            id: uuid(),
-            userId: user.id
-
-          },
+        broadcastSystemMessage({
+          message: `${user.username} joined channel`,
           roomId: data.roomId,
-          excludeUserId: data.userId
+          excludeUserId: userId,
         });
 
         return;
       }
 
       if (data.type === MESSAGE_ACTION.LEAVE && data.roomId) {
-        leaveRoom({
-          userId: data.userId,
-          roomId: data.roomId
-        });
-        // TODO: to remove peer only from the direct room, not all
+        leaveRoom({ userId, roomId: data.roomId });
 
-        broadcastToRoom({
-          content: {
-            content: `${user.username} leaved channel`,
-            type: MESSAGE_TYPE.SYSTEM,
-            createdAt: Date.now(),
-            id: uuid(),
-            userId: user.id
-          },
+        broadcastSystemMessage({
+          message: `${user.username} left channel`,
           roomId: data.roomId,
-          excludeUserId: data.userId
+          excludeUserId: userId,
         });
 
         return;
       }
 
       if (data.type === MESSAGE_ACTION.CHAT && data.roomId && data.message) {
+        const msg = {
+          content: `${user.username}: ${data.message}`,
+          type: MESSAGE_TYPE.USER,
+          createdAt: Date.now(),
+          id: uuid(),
+          userId,
+        };
+
         broadcastToRoom({
-          content: {
-            content: `${user.username}: ${data.message}`,
-            type: MESSAGE_TYPE.USER,
-            createdAt: Date.now(),
-            id: uuid(),
-            userId: user.id
-          },
+          content: msg,
           roomId: data.roomId,
-          excludeUserId: data.userId
+          excludeUserId: userId,
         });
 
-        const message = MessageRepository.add(data.roomId, data.userId, data.message);
+        const saved = MessageRepository.add(data.roomId, userId, data.message);
 
         peer.send({
-          content: message.content,
-          type: MESSAGE_TYPE.USER,
-          createdAt: message.createdAt,
-          id: message.id,
-          userId: message.userId
+          ...msg,
+          content: saved.content,
         });
       }
     } catch (err) {
-      console.error('Invalid message format', err);
+      console.error("Invalid message format", err);
     }
   },
 
   close(peer) {
-    //TODO: work with tab closing to remove peer
-    console.log('[ws] client disconnected');
-    // leaveRoom(peer);
+    console.log("[ws] client disconnected");
+    PeerRepository.remove(peer.id)
+    // Optional: remove peer from PeerRepository here
   },
 
-  error(error) {
-    console.log('[error]', error);
-  }
+  error(peer, error) {
+    console.error("[ws error]", error);
+  },
 });

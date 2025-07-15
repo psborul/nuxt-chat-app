@@ -1,7 +1,7 @@
 html {
   box-sizing: border-box;
   font-size: 16px;
-  font-family: Inter, sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 *,
@@ -11,22 +11,14 @@ html {
 }
 
 body,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-ol,
-ul {
+h1, h2, h3, h4, h5, h6,
+p, ol, ul {
   margin: 0;
   padding: 0;
   font-weight: normal;
 }
 
-ol,
-ul {
+ol, ul {
   list-style: none;
 }
 
@@ -39,46 +31,65 @@ button {
   cursor: pointer;
 }
 
-:root {
-  --color-primary: #4c6ef5;
-  --color-success: #51cf66;
-  --color-error: #ff6b6b;
-  --color-system: #ffd43b;
-}
+/* -------------------------------------
+   Base Colors - Branded for Chattera
+------------------------------------- */
 
-// Light Theme
-// [theme="light"] {
 :root {
-  --color-primary: #2196f3;
-  --color-secondary: #28a076;
-  --color-error: #e53935;
-  --text-on-primary: #000;
-  --bg: #f8f9fa;
+  // Brand colors
+  --color-primary: #3b82f6; // Blue-500
+  --color-secondary: #0ea5e9; // Sky-500
+  --color-accent: #6366f1; // Indigo-500
+
+  // System
+  --color-success: #22c55e;
+  --color-error: #ef4444;
+  --color-warning: #facc15;
+
+  // Typography
+  --text: #1e293b;
+  --text-muted: #6b7280;
+  --text-on-primary: #ffffff;
+
+  // Backgrounds
+  --bg: #f9fafb;
   --surface: #ffffff;
-  --surface-hover: #f1f3f5;
-  --text: #212529;
-  --muted: #6c757d;
-  --border: #dee2e6;
-  --user-msg: #e7f5ff;
-  --peer-msg: #f1f3f5;
-  --system-msg: #fff3bf;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --surface-hover: #f1f5f9;
+
+  // Misc
+  --border: #e2e8f0;
+  --shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+
+  // Chat
+  --user-msg: #e0f2fe;
+  --peer-msg: #f8fafc;
+  --system-msg: #fef3c7;
 }
 
-// Dark Theme
+/* -------------------------------------
+   Dark Theme Overrides
+------------------------------------- */
 [theme="dark"] {
-  --bg: #1e1e2f;
-  --surface: #2c2e3e;
-  --surface-hover: #3b3e5c;
-  --text: #f8f9fa;
-  --muted: #a5a5a5;
-  --border: #44475a;
-  --user-msg: #364fc7;
-  --peer-msg: #3b3e5c;
-  --system-msg: #ffd43b;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --color-primary: #1976d2;
-  --color-secondary: #1b8d69;
-  --color-error: #c62828;
-  --text-on-primary: #fff;
+  --color-primary: #3b82f6;
+  --color-secondary: #38bdf8;
+  --color-accent: #8b5cf6;
+
+  --color-success: #22c55e;
+  --color-error: #ef4444;
+  --color-warning: #fde047;
+
+  --text: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-on-primary: #ffffff;
+
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --surface-hover: #334155;
+
+  --border: #475569;
+  --shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+
+  --user-msg: #1e40af;
+  --peer-msg: #1e293b;
+  --system-msg: #fde68a;
 }

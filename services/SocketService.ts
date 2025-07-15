@@ -63,11 +63,10 @@ export default class SocketService {
     };
   }
 
-  joinRoom({ userId, roomId }: { userId: string; roomId: string; }) {
+  joinRoom({ roomId }: { roomId: string; }) {
     console.log("JOINROOM");
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       this.send({
-        userId,
         type: MESSAGE_ACTION.JOIN,
         roomId: roomId,
       });
@@ -76,10 +75,9 @@ export default class SocketService {
     }
   };
 
-  leaveRoom({ userId, roomId }: { userId: string; roomId: string; }) {
+  leaveRoom({ roomId }: { roomId: string; }) {
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       this.send({
-        userId,
         type: MESSAGE_ACTION.LEAVE,
         roomId: roomId,
       });

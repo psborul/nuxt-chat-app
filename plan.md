@@ -152,8 +152,25 @@ User leaves channel        ─────▶ WS: { type: "leave", username, cha
 ```
 
 ## DAY PLAN
-
+Revisit
 - Peers page 
   - Create
   - Delete
   - Join
+
+  NetworkServices
+  -Create RoomService
+  -Create UserService
+
+- Tabs to filter rooms (Favorite, Joined, Available, Own)
+- Search
+- Create Room Form Modal
+- Toggle Theme
+- Empty State
+
+📦 Future Paid Features to Pair with Tabs
+-Room bookmarks / favorites
+-Room activity overview (messages, last seen)
+-Advanced search (by owner, keyword, type)
+-Pinning important rooms
+-User management per room (for owners)
