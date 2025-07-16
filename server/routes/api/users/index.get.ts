@@ -11,7 +11,12 @@ export default defineEventHandler((event) => {
   if (query.roomId) {
     const userIds = MembershipRepository.getRoomUsers(query.roomId as string);
 
-    return userIds.map((userId) => UserRepository.findById(userId));
+    return userIds.map((userId) => {
+      const user = UserRepository.findById(userId);
+      return {
+        ...user,
+      }
+    });
   }
 
   return UserRepository.findAll();

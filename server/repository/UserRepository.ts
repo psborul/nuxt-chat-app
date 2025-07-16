@@ -34,6 +34,11 @@ class UserRepository {
     }
   }
 
+  isOnline(id: string) {
+    const user = this.users.get(id);
+    return user.online;
+  }
+
   delete(id: string): boolean {
     return this.users.delete(id);
   }

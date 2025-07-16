@@ -17,6 +17,7 @@ export type User = {
   passwordSalt: string;
   roomId: string;
   username: string;
+  online: boolean;
 };
 
 export type Message = {

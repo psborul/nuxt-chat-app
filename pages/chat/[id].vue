@@ -1,23 +1,17 @@
 <template>
   <div class="chat-page">
-    <aside class="sidebar">
-      <p>Users in room:</p>
-      <ul>
-        <li v-for="userItem in users" :key="userItem.id">
-          {{ userItem.username }}
-        </li>
-      </ul>
-    </aside>
+    <SidebarMembers :users="users" :current-user="user" />
 
     <main class="chat-page__main">
       <header class="header">
         <div>
-          Room: {{ roomId }}
+          Room: {{ room?.name }}
           <div class="mobile-user-count">
-            {{ users.length }} member{{ users.length !== 1 ? 's' : '' }}
+            {{ users.length }} member{{ users.length !== 1 ? 's,' : ',' }}
+            <span class="online-summary">{{ onlineCount }} online</span>
           </div>
         </div>
-        <Button type="primary" @click.prevent="handleLeave">LEAVE</Button>
+        <Button variant="primary" @click.prevent="handleLeave">LEAVE</Button>
       </header>
 
       <div class="message-window">
@@ -29,13 +23,12 @@ v-for="message in messages" :id="message.id" :key="message.id" :content="message
 
         <form class="form" @submit.prevent="handleSubmit">
           <Textfield ref="inputRef" v-model="text" class="form__input" placeholder="Type a message..." />
-          <Button type="primary" class="form__button">Send</Button>
+          <Button variant="primary" class="form__button">Send</Button>
         </form>
       </div>
     </main>
   </div>
 </template>
-
 
 <script setup lang="ts">
 import MessageItem from '~/components/MessageItem.vue';
@@ -43,7 +36,7 @@ import type Textfield from '~/components/Textfield.vue';
 import NetworkService from '~/services/NetworkService';
 import SocketService, { SOCKET_EVENT_TYPE } from '~/services/SocketService';
 import Storage from '~/services/Storage';
-import type { Message, User } from '~/types';
+import type { Message, User, Room } from '~/types';
 
 const router = useRouter();
 const { params } = useRoute();
@@ -52,6 +45,8 @@ const roomId = params.id as string;
 const text = ref('');
 const user = ref<User>();
 const users = ref<User[]>([]);
+const room = ref<Room>();
+// ADD TYPES TO ROOM ON CLIENT;
 const messages = ref<Message[]>([]);
 
 const messageContainer = ref<HTMLElement | null>(null);
@@ -64,28 +59,31 @@ const fetchMessages = async () => {
   messages.value = await NetworkService.get(`/api/messages?roomId=${roomId}`);
 };
 
+const fetchRoom = async () => {
+  room.value = await NetworkService.get(`/api/rooms?roomId=${roomId}`);
+};
+
 const socketUrl = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws/socket?token=${Storage.get<User>(STORAGE_USER_KEY).token}`;
 const socketService = new SocketService(socketUrl);
+socketService.connect();
+
+socketService.emitter.$on(SOCKET_EVENT_TYPE.OPEN, () => {
+  socketService.joinRoom({ roomId });
+});
+
+socketService.emitter.$on(SOCKET_EVENT_TYPE.MESSAGE, (data) => {
+  messages.value.push(data);
+  nextTick(() => {
+    messageContainer.value?.scrollTo({ top: messageContainer.value.scrollHeight });
+  });
+});
 
 onMounted(async () => {
   user.value = Storage.get<User>(STORAGE_USER_KEY);
+
   await fetchMessages();
   await fetchUsers();
-
-  socketService.connect();
-
-  socketService.emitter.$on(SOCKET_EVENT_TYPE.OPEN, () => {
-    socketService.joinRoom({ roomId });
-  });
-
-  socketService.emitter.$on(SOCKET_EVENT_TYPE.MESSAGE, (data) => {
-    messages.value.push(data);
-    nextTick(() => {
-      if (messageContainer.value) {
-        messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
-      }
-    });
-  });
+  await fetchRoom();
 
   window.addEventListener('beforeunload', handleLeave);
 });
@@ -113,6 +111,7 @@ const handleLeave = () => {
   router.push({ name: ROUTE.ROOMS });
 };
 
+const onlineCount = computed(() => users.value.filter(user => user.online).length);
 
 definePageMeta({ middleware: 'auth' });
 </script>
@@ -130,14 +129,6 @@ definePageMeta({ middleware: 'auth' });
     flex-direction: column;
     overflow: hidden;
   }
-}
-
-.sidebar {
-  background-color: var(--surface-hover);
-  color: var(--text);
-  padding: 10px;
-  border-right: 1px solid var(--border);
-  min-width: 180px;
 }
 
 .header {
@@ -164,7 +155,7 @@ definePageMeta({ middleware: 'auth' });
   padding: 12px 16px;
   display: flex;
   flex-direction: column;
-  gap: 4px; // 👈 tighter spacing
+  gap: 6px;
   scroll-behavior: smooth;
 }
 
@@ -189,28 +180,10 @@ definePageMeta({ middleware: 'auth' });
     flex-direction: column;
   }
 
-  .sidebar {
-    order: 2;
-    border-right: none;
-    border-top: 1px solid var(--border);
-  }
-
   .form {
     position: sticky;
     bottom: 0;
     z-index: 10;
-  }
-}
-
-.sidebar {
-  background-color: var(--surface-hover);
-  color: var(--text);
-  padding: 10px;
-  border-right: 1px solid var(--border);
-  min-width: 180px;
-
-  @media (max-width: 768px) {
-    display: none;
   }
 }
 
@@ -222,5 +195,12 @@ definePageMeta({ middleware: 'auth' });
   @media (min-width: 769px) {
     display: none;
   }
+}
+
+
+.online-summary {
+  font-size: 13px;
+  color: var(--muted);
+  margin-left: 4px;
 }
 </style>

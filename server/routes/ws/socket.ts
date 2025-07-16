@@ -25,13 +25,13 @@ export default defineWebSocketHandler({
     }
 
     try {
-      const decoded = verifyToken(token) as TokenPayload;
-      console.log(decoded);
+      const user = verifyToken(token) as TokenPayload;
+      UserRepository.setOnline(user.id, true);
 
-      peer.context.user = decoded; // Save decoded user to peer context
+      peer.context.user = user; // Save decoded user to peer context
       PeerRepository.add(peer);
 
-      console.log("✅ User connected:", decoded.username);
+      console.log("✅ User connected:", user.username);
     } catch (err) {
       console.warn("❌ Invalid token");
       peer.close(4002, "Invalid token");
@@ -105,8 +105,12 @@ export default defineWebSocketHandler({
   },
 
   close(peer) {
+    const user = peer.context.user;
+    if (!user) return;
+
     console.log("[ws] client disconnected");
-    PeerRepository.remove(peer.id)
+    UserRepository.setOnline(user.id, false);
+    PeerRepository.remove(peer.id);
     // Optional: remove peer from PeerRepository here
   },
 

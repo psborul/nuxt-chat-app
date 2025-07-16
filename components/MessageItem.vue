@@ -33,7 +33,6 @@ console.log(props)
   padding: 5px 10px;
   border-radius: 10px;
   color: black;
-  margin-bottom: 10px;
   margin-right: auto;
 
   &.received {

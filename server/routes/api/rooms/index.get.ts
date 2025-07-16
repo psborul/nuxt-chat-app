@@ -1,6 +1,6 @@
 import MembershipRepository from "~/server/repository/MembershipRepository";
 import RoomRepository from "~/server/repository/RoomRepository";
-import { getUserFromToken } from '~/server/utils/auth';
+import { getUserFromToken } from "~/server/utils/auth";
 
 type QueryParams = {
   roomId?: string;
@@ -18,24 +18,12 @@ export default defineEventHandler((event) => {
     };
   }
 
-  // TODO: rework to remove
-  if (userId) {
-    const rooms = RoomRepository.getAll().map((room) => {
-      return {
-        ...room,
-        users: MembershipRepository.getRoomUsers(room.id),
-        joined: MembershipRepository.hasUserInRoom(userId, room.id),
-        isOwner: MembershipRepository.isOwner(room.id, userId)
-      };
-    });
-
-    return rooms;
-  }
-
   const rooms = RoomRepository.getAll().map((room) => {
     return {
       ...room,
       users: MembershipRepository.getRoomUsers(room.id),
+      joined: MembershipRepository.hasUserInRoom(userId, room.id),
+      isOwner: MembershipRepository.isOwner(room.id, userId),
     };
   });
 
