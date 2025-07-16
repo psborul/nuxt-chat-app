@@ -2,7 +2,7 @@
   <div class="rooms-page">
     <header class="rooms-header">
       <h1>Hello, {{ user?.username }}</h1>
-      <Button type="primary" @click="handleLogout">Log out</Button>
+      <Button variant="primary" @click="handleLogout">Log out</Button>
     </header>
 
     <!-- Room Creation Form -->
@@ -13,7 +13,7 @@
         class="room-name-input"
         required
       />
-      <Button type="secondary">Create Room</Button>
+      <Button variant="secondary">Create Room</Button>
     </form>
 
     <!-- Room List -->
