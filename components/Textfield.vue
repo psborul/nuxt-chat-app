@@ -1,22 +1,33 @@
 <template>
   <div class="textfield" :class="{ 'has-error': errorMessage }">
     <label v-if="label">{{ label }}</label>
-    <!-- TODO: ADD SEMANTIC LABEL FOR AND ETC -->
-    <input v-bind="$attrs" v-model="model" :type="type" :placeholder="placeholder" class="textfield__input">
+    <input
+      ref="inputEl"
+      v-bind="$attrs"
+      v-model="model"
+      :type="type"
+      :placeholder="placeholder"
+      class="textfield__input"
+    >
     <p v-if="errorMessage" class="textfield__error">{{ errorMessage }}</p>
   </div>
 </template>
 
-
 <script setup lang="ts">
-const model = defineModel<string>();
+const model = defineModel<string>()
+const inputEl = ref<HTMLInputElement | null>(null)
+
+defineExpose({
+  focus: () => inputEl.value?.focus(),
+  inputEl,
+})
 
 defineProps<{
-  label?: string;
-  placeholder?: string;
-  type?: string;
-  errorMessage?: string;
-}>();
+  label?: string
+  placeholder?: string
+  type?: string
+  errorMessage?: string
+}>()
 </script>
 
 <style scoped lang="scss">

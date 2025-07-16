@@ -11,25 +11,24 @@
 
     <main class="chat-page__main">
       <header class="header">
-        Room: {{ roomId }}
+        <div>
+          Room: {{ roomId }}
+          <div class="mobile-user-count">
+            {{ users.length }} member{{ users.length !== 1 ? 's' : '' }}
+          </div>
+        </div>
         <Button type="primary" @click.prevent="handleLeave">LEAVE</Button>
       </header>
 
       <div class="message-window">
         <div ref="messageContainer" class="message-view">
           <MessageItem
-            v-for="message in messages"
-            :id="message.id"
-            :key="message.id"
-            :content="message.content"
-            :created-at="message.createdAt"
-            :self="message.userId === user?.id"
-            :type="message.type || ''"
-          />
+v-for="message in messages" :id="message.id" :key="message.id" :content="message.content"
+            :created-at="message.createdAt" :self="message.userId === user?.id" :type="message.type || ''" />
         </div>
 
         <form class="form" @submit.prevent="handleSubmit">
-          <Textfield v-model="text" class="form__input" placeholder="Type a message..." />
+          <Textfield ref="inputRef" v-model="text" class="form__input" placeholder="Type a message..." />
           <Button type="primary" class="form__button">Send</Button>
         </form>
       </div>
@@ -37,80 +36,85 @@
   </div>
 </template>
 
+
 <script setup lang="ts">
-import MessageItem from '~/components/MessageItem.vue'
-import NetworkService from '~/services/NetworkService'
-import SocketService, { SOCKET_EVENT_TYPE } from '~/services/SocketService'
-import Storage from '~/services/Storage'
-import type { Message, User } from '~/types'
+import MessageItem from '~/components/MessageItem.vue';
+import type Textfield from '~/components/Textfield.vue';
+import NetworkService from '~/services/NetworkService';
+import SocketService, { SOCKET_EVENT_TYPE } from '~/services/SocketService';
+import Storage from '~/services/Storage';
+import type { Message, User } from '~/types';
 
-const router = useRouter()
-const { params } = useRoute()
-const roomId = params.id as string
+const router = useRouter();
+const { params } = useRoute();
+const roomId = params.id as string;
 
-const text = ref('')
-const user = ref<User>()
-const users = ref<User[]>([])
-const messages = ref<Message[]>([])
+const text = ref('');
+const user = ref<User>();
+const users = ref<User[]>([]);
+const messages = ref<Message[]>([]);
 
-const messageContainer = ref<HTMLElement | null>(null)
+const messageContainer = ref<HTMLElement | null>(null);
 
 const fetchUsers = async () => {
-  users.value = await NetworkService.get(`/api/users?roomId=${roomId}`)
-}
+  users.value = await NetworkService.get(`/api/users?roomId=${roomId}`);
+};
 
 const fetchMessages = async () => {
-  messages.value = await NetworkService.get(`/api/messages?roomId=${roomId}`)
-}
+  messages.value = await NetworkService.get(`/api/messages?roomId=${roomId}`);
+};
 
-const socketUrl = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws/socket?token=${Storage.get<User>(STORAGE_USER_KEY).token}`
-const socketService = new SocketService(socketUrl)
+const socketUrl = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws/socket?token=${Storage.get<User>(STORAGE_USER_KEY).token}`;
+const socketService = new SocketService(socketUrl);
 
 onMounted(async () => {
-  user.value = Storage.get<User>(STORAGE_USER_KEY)
-  await fetchMessages()
-  await fetchUsers()
+  user.value = Storage.get<User>(STORAGE_USER_KEY);
+  await fetchMessages();
+  await fetchUsers();
 
-  socketService.connect()
+  socketService.connect();
 
   socketService.emitter.$on(SOCKET_EVENT_TYPE.OPEN, () => {
-    socketService.joinRoom({ roomId })
-  })
+    socketService.joinRoom({ roomId });
+  });
 
   socketService.emitter.$on(SOCKET_EVENT_TYPE.MESSAGE, (data) => {
-    messages.value.push(data)
+    messages.value.push(data);
     nextTick(() => {
       if (messageContainer.value) {
-        messageContainer.value.scrollTop = messageContainer.value.scrollHeight
+        messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
       }
-    })
-  })
+    });
+  });
 
-  window.addEventListener('beforeunload', handleLeave)
-})
+  window.addEventListener('beforeunload', handleLeave);
+});
 
 onBeforeUnmount(() => {
-  socketService.disconnect()
-  window.removeEventListener('beforeunload', handleLeave)
-})
+  socketService.disconnect();
+  window.removeEventListener('beforeunload', handleLeave);
+});
+
+const inputRef = ref<InstanceType<typeof Textfield> | null>(null);
 
 const handleSubmit = () => {
-  if (!text.value.trim()) return
+  if (!text.value.trim()) return;
 
-  socketService.sendMessage({
-    message: text.value,
-    roomId,
-  })
+  socketService.sendMessage({ message: text.value, roomId });
+  text.value = '';
 
-  text.value = ''
-}
+  nextTick(() => {
+    inputRef.value?.focus();
+  });
+};
 
 const handleLeave = () => {
-  socketService.leaveRoom({ roomId })
-  router.push({ name: ROUTE.ROOMS })
-}
+  socketService.leaveRoom({ roomId });
+  router.push({ name: ROUTE.ROOMS });
+};
 
-definePageMeta({ middleware: 'auth' })
+
+definePageMeta({ middleware: 'auth' });
 </script>
 
 <style scoped lang="scss">
@@ -195,6 +199,28 @@ definePageMeta({ middleware: 'auth' })
     position: sticky;
     bottom: 0;
     z-index: 10;
+  }
+}
+
+.sidebar {
+  background-color: var(--surface-hover);
+  color: var(--text);
+  padding: 10px;
+  border-right: 1px solid var(--border);
+  min-width: 180px;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.mobile-user-count {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 2px;
+
+  @media (min-width: 769px) {
+    display: none;
   }
 }
 </style>
