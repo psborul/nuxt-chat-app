@@ -1,6 +1,5 @@
 import type { MESSAGE_ACTION, MESSAGE_TYPE } from '~/services/SocketService';
 
-// server/api/ws.rooms.ts
 import type { defineWebSocketHandler } from 'h3';
 
 export type Peer = ReturnType<typeof defineWebSocketHandler>['open'] extends (peer: infer T) => any ? T : never;

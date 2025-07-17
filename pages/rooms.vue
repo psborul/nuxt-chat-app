@@ -1,6 +1,7 @@
 <template>
   <div class="rooms-page">
     <header class="rooms-header">
+      <img class="logo" src="../assets/LOGOTRANSSMALL.png" alt="">
       <h1>Hello, {{ user?.username }}</h1>
       <Button variant="primary" @click="handleLogout">Log out</Button>
     </header>
@@ -34,7 +35,7 @@
 
 <script setup lang="ts">
 import RoomCard from '~/components/RoomCard.vue';
-import NetworkService from '~/services/NetworkService';
+import RoomService from '~/services/api/RoomService';
 import Storage from '~/services/Storage';
 import type { Room } from '~/types';
 
@@ -50,7 +51,7 @@ onMounted(() => {
 
 const getRooms = async () => {
   if (!user.value?.id) return;
-  rooms.value = await NetworkService.get(`/api/rooms?userId=${user.value.id}`);
+  rooms.value = await RoomService.getAllByUserId(user.value.id)
 };
 
 const handleLogout = () => {
@@ -60,7 +61,9 @@ const handleLogout = () => {
 
 const handleCreateRoom = async () => {
   if (!roomName.value.trim()) return;
-  await NetworkService.post('/api/rooms', { name: roomName.value.trim() });
+
+  await RoomService.create(roomName.value.trim())
+
   roomName.value = '';
   getRooms();
 };
@@ -70,18 +73,19 @@ const handleOpenChat = (roomId: string) => {
 };
 
 const handleDelete = async (roomId: string) => {
-  await NetworkService.post('/api/rooms/delete', { roomId });
+  await RoomService.delete(roomId)
+
   getRooms();
 };
 
 const handleLeave = async ({ roomId }: { roomId: string }) => {
-  await NetworkService.post('/api/rooms/leave', { roomId });
+  await RoomService.leave(roomId)
   getRooms();
 };
 
 const handleJoin = async ({ roomId, createdBy }: { roomId: string; createdBy: string }) => {
   if (user.value.id !== createdBy) {
-    await NetworkService.post('/api/rooms/join', { roomId });
+    await RoomService.join(roomId)
   }
   getRooms();
 };
@@ -123,5 +127,9 @@ definePageMeta({
   display: grid;
   gap: 1rem;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+}
+
+.logo {
+  width: 150px;
 }
 </style>

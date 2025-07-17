@@ -22,7 +22,7 @@
 
 <script setup lang="ts">
 
-import NetworkService from '~/services/NetworkService';
+import NetworkService from '~/services/api/NetworkService';
 import Storage from '~/services/Storage';
 
 const router = useRouter();
@@ -41,7 +41,7 @@ const handleAuth = async () => {
   };
 
   try {
-    const user = await NetworkService.post('/api/registration', formData);
+    const user = await NetworkService.post('/registration', formData);
     clearToasts();
     Storage.set(STORAGE_USER_KEY, user);
     router.push({ name: ROUTE.ROOMS });

@@ -8,7 +8,7 @@ class NetworkService {
 
   async get(url: string) {
     const user = Storage.get(STORAGE_USER_KEY);
-    const response = await fetch(url, {
+    const response = await fetch(this.url + url, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${user.token}`,
@@ -21,7 +21,7 @@ class NetworkService {
   async post(url: string, payload: any) {
     const user = Storage.get(STORAGE_USER_KEY);
 
-    const response = await fetch(url, {
+    const response = await fetch(this.url + url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -33,7 +33,9 @@ v-for="message in messages" :id="message.id" :key="message.id" :content="message
 <script setup lang="ts">
 import MessageItem from '~/components/MessageItem.vue';
 import type Textfield from '~/components/Textfield.vue';
-import NetworkService from '~/services/NetworkService';
+import MessagesService from '~/services/api/MessagesService';
+import RoomService from '~/services/api/RoomService';
+import UsersService from '~/services/api/UsersService';
 import SocketService, { SOCKET_EVENT_TYPE } from '~/services/SocketService';
 import Storage from '~/services/Storage';
 import type { Message, User, Room } from '~/types';
@@ -46,21 +48,20 @@ const text = ref('');
 const user = ref<User>();
 const users = ref<User[]>([]);
 const room = ref<Room>();
-// ADD TYPES TO ROOM ON CLIENT;
 const messages = ref<Message[]>([]);
 
 const messageContainer = ref<HTMLElement | null>(null);
 
 const fetchUsers = async () => {
-  users.value = await NetworkService.get(`/api/users?roomId=${roomId}`);
+  users.value = await UsersService.getUsers(roomId)
 };
 
 const fetchMessages = async () => {
-  messages.value = await NetworkService.get(`/api/messages?roomId=${roomId}`);
+  messages.value = await MessagesService.getMessages(roomId)
 };
 
 const fetchRoom = async () => {
-  room.value = await NetworkService.get(`/api/rooms?roomId=${roomId}`);
+  room.value = await RoomService.getById(roomId)
 };
 
 const socketUrl = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws/socket?token=${Storage.get<User>(STORAGE_USER_KEY).token}`;
@@ -73,6 +74,7 @@ socketService.emitter.$on(SOCKET_EVENT_TYPE.OPEN, () => {
 
 socketService.emitter.$on(SOCKET_EVENT_TYPE.MESSAGE, (data) => {
   messages.value.push(data);
+  //SCROLL ON NEW MESSAGE
   nextTick(() => {
     messageContainer.value?.scrollTo({ top: messageContainer.value.scrollHeight });
   });
@@ -80,10 +82,12 @@ socketService.emitter.$on(SOCKET_EVENT_TYPE.MESSAGE, (data) => {
 
 onMounted(async () => {
   user.value = Storage.get<User>(STORAGE_USER_KEY);
-
-  await fetchMessages();
-  await fetchUsers();
-  await fetchRoom();
+  
+  Promise.allSettled([
+  fetchMessages(),
+  fetchUsers(),
+  fetchRoom()
+]);
 
   window.addEventListener('beforeunload', handleLeave);
 });

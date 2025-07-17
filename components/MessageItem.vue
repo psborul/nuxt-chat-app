@@ -34,6 +34,7 @@ console.log(props)
   border-radius: 10px;
   color: black;
   margin-right: auto;
+  word-break: break-word;
 
   &.received {
     margin-left: auto;
