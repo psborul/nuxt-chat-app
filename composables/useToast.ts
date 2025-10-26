@@ -20,7 +20,9 @@ export const useToast = () => {
 
     const remove = () => {
       const index = toasts.value.findIndex((t) => t.id === id);
-      if (index !== -1) toasts.value.splice(index, 1);
+      if (index !== -1) {
+        toasts.value.splice(index, 1);
+      }
     };
 
     setTimeout(remove, timeout);

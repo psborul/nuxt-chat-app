@@ -6,10 +6,10 @@
     </div>
 
     <div class="room-card__meta">
-      <div><strong>ID:</strong> {{ room.id }}</div>
-      <div><strong>Users:</strong> {{ room.users.length }}</div>
-      <div><strong>Created:</strong> {{ formatDate(room.createdAt) }}</div>
-      <div><strong>Owner:</strong> {{ room.createdBy }}</div>
+      <div>ID: {{ room.id }}</div>
+      <div>Users: {{ room.users.length }}</div>
+      <div>Created: {{ formatDate(room.createdAt) }}</div>
+      <div>Owner: {{ room.createdBy }}</div>
     </div>
 
     <div class="room-card__actions">

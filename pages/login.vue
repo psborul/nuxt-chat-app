@@ -1,14 +1,13 @@
 <template>
-  <div class="register-page">
-    <form class="register-form" @submit.prevent="handleAuth">
-      <img class="logo" src="../assets/LOGOTRANSSMALL.png" alt="">
-      <h2 class="register-form__title">Sign in</h2>
+  <div class="login-page">
+    <form class="login-form" @submit.prevent="handleAuth">
+      <h2 class="login-form__title">Sign in</h2>
 
-      <Textfield v-model="email" autocomplete="email" class="register-form__field" label="Email" type="email" required />
+      <Textfield v-model="email" autocomplete="email" class="login-form__field" label="Email" type="email" required />
 
-      <Textfield v-model="password" autocomplete="current-password" class="register-form__field" label="Password" type="password" required />
+      <Textfield v-model="password" autocomplete="current-password" class="login-form__field" label="Password" type="password" required />
 
-      <Button type="submit" variant="primary" class="register-form__submit">
+      <Button type="submit" variant="primary" class="login-form__submit">
         Sign in
       </Button>
 
@@ -54,7 +53,7 @@ definePageMeta({
 </script>
 
 <style scoped lang="scss">
-.register-page {
+.login-page {
   background: var(--bg);
   min-height: 100vh;
   display: flex;
@@ -63,7 +62,7 @@ definePageMeta({
   padding: 1rem;
 }
 
-.register-form {
+.login-form {
   background-color: var(--surface);
   padding: 32px;
   border-radius: 12px;

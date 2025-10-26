@@ -4,3 +4,7 @@
     <ToastContainer />
   </NuxtLayout>
 </template>
+
+<script setup>
+useTheme()
+</script>

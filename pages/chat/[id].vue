@@ -74,6 +74,7 @@ socketService.emitter.$on(SOCKET_EVENT_TYPE.OPEN, () => {
 
 socketService.emitter.$on(SOCKET_EVENT_TYPE.MESSAGE, (data) => {
   messages.value.push(data);
+  fetchUsers()
   //SCROLL ON NEW MESSAGE
   nextTick(() => {
     messageContainer.value?.scrollTo({ top: messageContainer.value.scrollHeight });
@@ -200,7 +201,6 @@ definePageMeta({ middleware: 'auth' });
     display: none;
   }
 }
-
 
 .online-summary {
   font-size: 13px;

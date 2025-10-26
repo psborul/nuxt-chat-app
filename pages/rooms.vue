@@ -1,7 +1,14 @@
 <template>
   <div class="rooms-page">
     <header class="rooms-header">
-      <img class="logo" src="../assets/LOGOTRANSSMALL.png" alt="">
+  <Button
+    @click="toggleTheme"
+    variant="secondary"
+    class="inline-flex items-center gap-2 px-3 py-2 rounded-lg border"
+  >
+    <span>{{ theme === 'dark' ? '🌙 ' : '☀️ ' }}</span>
+    <span class="capitalize">{{ theme }}</span>
+  </Button>
       <h1>Hello, {{ user?.username }}</h1>
       <Button variant="primary" @click="handleLogout">Log out</Button>
     </header>
@@ -38,6 +45,8 @@ import RoomCard from '~/components/RoomCard.vue';
 import RoomService from '~/services/api/RoomService';
 import Storage from '~/services/Storage';
 import type { Room } from '~/types';
+
+const { theme, toggleTheme } = useTheme()
 
 const router = useRouter();
 const user = ref();
@@ -127,9 +136,5 @@ definePageMeta({
   display: grid;
   gap: 1rem;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-}
-
-.logo {
-  width: 150px;
 }
 </style>

@@ -1,7 +1,6 @@
 <template>
   <div class="register-page">
     <form class="register-form" @submit.prevent="handleAuth">
-      <img class="logo" src="../assets/LOGOTRANSSMALL.png" alt="">
       <h2 class="register-form__title">Create Account</h2>
 
       <Textfield v-model="email" autocomplete="email" class="register-form__field" label="Email" type="email" required />
