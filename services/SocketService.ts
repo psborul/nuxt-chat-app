@@ -31,6 +31,7 @@ export default class SocketService {
 
   connect(): void {
     if (this.socket) return; // Prevent duplicate connections
+    console.log(this.url)
 
     this.socket = new WebSocket(this.url);
 

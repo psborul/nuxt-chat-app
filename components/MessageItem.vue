@@ -23,8 +23,6 @@ const props = defineProps<{
   content: string;
   createdAt: number;
 }>();
-
-console.log(props)
 </script>
 
 <style lang="scss" scoped>

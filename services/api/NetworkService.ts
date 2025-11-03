@@ -3,10 +3,10 @@ import Storage from "~/services/Storage";
 class NetworkService {
   url;
   constructor() {
-    this.url = "/api";
+    this.url = "";
   }
 
-  async get(url: string) {
+  async get<T>(url: string): Promise<T> {
     const user = Storage.get(STORAGE_USER_KEY);
     const response = await fetch(this.url + url, {
       method: "GET",
@@ -18,7 +18,7 @@ class NetworkService {
     return await response.json();
   }
 
-  async post(url: string, payload: any) {
+  async post<T>(url: string, payload: any): Promise<T> {
     const user = Storage.get(STORAGE_USER_KEY);
 
     const response = await fetch(this.url + url, {

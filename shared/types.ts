@@ -5,3 +5,10 @@ export type Room = {
   ownerId: string;
   peers?: any;
 };
+
+export type User = {
+  email: string;
+  id: string;
+  token: string;
+  username: string;
+}

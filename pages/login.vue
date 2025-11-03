@@ -21,6 +21,7 @@
 
 import NetworkService from '~/services/api/NetworkService';
 import Storage from '~/services/Storage';
+import type { User } from '~/utils/types';
 
 const router = useRouter();
 
@@ -36,7 +37,7 @@ const handleAuth = async () => {
   };
 
   try {
-    const user = await NetworkService.post('/login', formData);
+    const user = await NetworkService.post<User>('v1/auth/login', formData);
     clearToasts();
     Storage.set(STORAGE_USER_KEY, user);
     router.push({ name: ROUTE.ROOMS });

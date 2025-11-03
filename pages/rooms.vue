@@ -60,7 +60,7 @@ onMounted(() => {
 
 const getRooms = async () => {
   if (!user.value?.id) return;
-  rooms.value = await RoomService.getAllByUserId(user.value.id)
+  rooms.value = await RoomService.getAllByUserId(user.value.id);
 };
 
 const handleLogout = () => {

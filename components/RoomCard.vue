@@ -14,7 +14,7 @@
 
     <div class="room-card__actions">
       <Button
-        v-if="!room.joined && !room.isOwner"
+        v-if="!room.joined && !owned"
         variant="primary"
         @click="$emit('join', { roomId: room.id, createdBy: room.createdBy })"
       >
@@ -22,7 +22,7 @@
       </Button>
 
       <Button
-        v-if="room.joined && !room.isOwner"
+        v-if="!owned"
         variant="secondary"
         @click="$emit('leave', { roomId: room.id, createdBy: room.createdBy })"
       >
@@ -30,7 +30,7 @@
       </Button>
 
       <Button
-        v-if="room.joined"
+        v-if="owned"
         variant="primary"
         @click="$emit('openChat', room.id)"
       >
@@ -38,7 +38,7 @@
       </Button>
 
       <Button
-        v-if="room.isOwner"
+        v-if="owned"
         variant="danger"
         @click="$emit('delete', room.id)"
       >
@@ -51,9 +51,10 @@
 <script setup lang="ts">
 import type { Room } from '~/types';
 
-defineProps<{ room: Room }>();
+defineProps<{ room: Room, owned: boolean }>();
 defineEmits(['join', 'leave', 'delete', 'openChat']);
 
+//TODO: replace to utils
 function formatDate(date: string | Date) {
   return new Date(date).toLocaleDateString();
 }

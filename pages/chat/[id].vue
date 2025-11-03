@@ -1,6 +1,6 @@
 <template>
   <div class="chat-page">
-    <SidebarMembers :users="users" :current-user="user" />
+    <!-- <SidebarMembers :users="users" :current-user="user" /> -->
 
     <main class="chat-page__main">
       <header class="header">
@@ -46,29 +46,32 @@ const roomId = params.id as string;
 
 const text = ref('');
 const user = ref<User>();
-const users = ref<User[]>([]);
+const users = ref<string[]>([]);
 const room = ref<Room>();
 const messages = ref<Message[]>([]);
 
 const messageContainer = ref<HTMLElement | null>(null);
 
 const fetchUsers = async () => {
-  users.value = await UsersService.getUsers(roomId)
+   const room = await RoomService.getById(roomId);
+   users.value = room.users;
 };
 
 const fetchMessages = async () => {
   messages.value = await MessagesService.getMessages(roomId)
+  console.log(messages.value)
 };
 
 const fetchRoom = async () => {
-  room.value = await RoomService.getById(roomId)
+  room.value = await RoomService.getById(roomId);
 };
 
-const socketUrl = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws/socket?token=${Storage.get<User>(STORAGE_USER_KEY).token}`;
+const socketUrl = `ws://localhost:3001/ws/socket`;
 const socketService = new SocketService(socketUrl);
 socketService.connect();
 
 socketService.emitter.$on(SOCKET_EVENT_TYPE.OPEN, () => {
+    fetchUsers()
   socketService.joinRoom({ roomId });
 });
 
@@ -81,11 +84,11 @@ socketService.emitter.$on(SOCKET_EVENT_TYPE.MESSAGE, (data) => {
   });
 });
 
-onMounted(async () => {
+onMounted(() => {
   user.value = Storage.get<User>(STORAGE_USER_KEY);
-  
+
   Promise.allSettled([
-  fetchMessages(),
+  // fetchMessages(),
   fetchUsers(),
   fetchRoom()
 ]);

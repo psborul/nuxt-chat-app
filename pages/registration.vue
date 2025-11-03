@@ -40,7 +40,7 @@ const handleAuth = async () => {
   };
 
   try {
-    const user = await NetworkService.post('/registration', formData);
+    const user = await NetworkService.post("v1/auth/register", formData);
     clearToasts();
     Storage.set(STORAGE_USER_KEY, user);
     router.push({ name: ROUTE.ROOMS });

@@ -13,3 +13,5 @@ export const ROUTE = {
   ROOMS: "rooms",
   REGISTRATION: "registration"
 };
+
+export const API_URL = "http://localhost:3001/v1"
