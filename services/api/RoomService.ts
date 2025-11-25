@@ -2,7 +2,7 @@ import NetworkService from "./NetworkService";
 import type { Room } from "~/types";
 
 class RoomService {
-  async getAllByUserId(userId: string): Promise<Room[]> {
+  async getAllRooms(): Promise<Room[]> {
     return await NetworkService.get(`v1/rooms`);
   }
 

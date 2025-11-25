@@ -37,37 +37,57 @@ defineProps<{
   gap: 6px;
 
   label {
-    font-size: 14px;
-    color: var(--muted);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: var(--spacing-xs);
   }
 
   &__input {
-    padding: 10px 12px;
-    border-radius: 6px;
-    border: 1px solid var(--border);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-md);
+    border: 2px solid var(--border);
     background-color: var(--surface);
     color: var(--text);
-    font-size: 15px;
+    font-size: var(--text-base);
     outline: none;
-    transition: border-color 0.2s, background-color 0.2s;
+    transition: all 0.2s ease;
+    min-height: 44px; // Better touch target
+    font-family: inherit;
 
     &::placeholder {
-      color: var(--muted);
+      color: var(--text-light);
     }
 
     &:focus {
       border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 20%, transparent);
+      background-color: var(--surface);
+    }
+
+    &:hover:not(:focus) {
+      border-color: var(--text-muted);
     }
   }
 
   &__error {
-    font-size: 13px;
+    font-size: var(--text-sm);
     color: var(--color-error);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    
+    &::before {
+      content: "⚠";
+      font-size: var(--text-xs);
+    }
   }
 
   &.has-error {
     .textfield__input {
       border-color: var(--color-error);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-error) 20%, transparent);
     }
 
     label {

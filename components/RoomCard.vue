@@ -6,13 +6,14 @@
     </div>
 
     <div class="room-card__meta">
-      <div>ID: {{ room.id }}</div>
-      <div>Users: {{ room.users.length }}</div>
-      <div>Created: {{ formatDate(room.createdAt) }}</div>
-      <div>Owner: {{ room.createdBy }}</div>
+      <div>{{ room.users.length }} member{{ room.users.length !== 1 ? 's' : '' }}</div>
+      <div>{{ onlineCount }} online</div>
+      <div>Created {{ formatDate(room.createdAt) }}</div>
+      <div v-if="room.joined" class="joined-indicator">✓ Joined</div>
     </div>
 
     <div class="room-card__actions">
+      <!-- Join button for non-members -->
       <Button
         v-if="!room.joined && !owned"
         variant="primary"
@@ -21,14 +22,25 @@
         Join
       </Button>
 
+      <!-- Open chat button for members -->
       <Button
-        v-if="!owned"
+        v-if="room.joined && !owned"
+        variant="primary"
+        @click="$emit('openChat', room.id)"
+      >
+        Open Chat
+      </Button>
+
+      <!-- Leave button for members (non-owners) -->
+      <Button
+        v-if="room.joined && !owned"
         variant="secondary"
         @click="$emit('leave', { roomId: room.id, createdBy: room.createdBy })"
       >
         Leave
       </Button>
 
+      <!-- Owner buttons -->
       <Button
         v-if="owned"
         variant="primary"
@@ -42,7 +54,7 @@
         variant="danger"
         @click="$emit('delete', room.id)"
       >
-        Remove
+        Delete Room
       </Button>
     </div>
   </div>
@@ -50,67 +62,79 @@
 
 <script setup lang="ts">
 import type { Room } from '~/types';
+import { formatDate } from '~/utils/date';
 
-defineProps<{ room: Room, owned: boolean }>();
+const props = defineProps<{ room: Room, owned: boolean }>();
 defineEmits(['join', 'leave', 'delete', 'openChat']);
 
-//TODO: replace to utils
-function formatDate(date: string | Date) {
-  return new Date(date).toLocaleDateString();
-}
+// Computed properties
+const onlineCount = computed(() => {
+  return props.room.users?.filter(user => user.online).length || 0;
+});
 </script>
 
 <style scoped lang="scss">
 .room-card {
   background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px 20px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg) var(--spacing-xl);
   box-shadow: var(--shadow);
   transition: all 0.25s ease;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--spacing-md);
 
   &:hover {
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-lg);
     transform: translateY(-2px);
     background-color: var(--surface-hover);
+    border-color: var(--color-primary);
   }
 
   &__header {
-    font-weight: 600;
-    font-size: 18px;
-    color: var(--color-primary);
+    font-weight: 700;
+    font-size: var(--text-lg);
+    color: var(--text);
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
 
   &__private {
-    font-size: 12px;
-    padding: 2px 8px;
-    border-radius: 4px;
-    background-color: var(--color-error);
-    color: var(--text-on-primary);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-warning);
+    color: var(--text);
   }
 
   &__meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-    font-size: 14px;
-    color: var(--muted);
+    gap: var(--spacing-md);
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+
+    .joined-indicator {
+      color: var(--color-success);
+      font-weight: 600;
+      background-color: color-mix(in srgb, var(--color-success) 15%, transparent);
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-xs);
+    }
   }
 
   &__actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 8px;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
 
     button {
-      flex: 1 1 calc(50% - 6px);
+      flex: 1 1 calc(50% - var(--spacing-sm));
       min-width: 120px;
     }
   }

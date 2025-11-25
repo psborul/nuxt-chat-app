@@ -1,7 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&display=swap');
+
 html {
   box-sizing: border-box;
   font-size: 16px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Google Sans', 'Roboto', 'Inter', system-ui, sans-serif;
 }
 
 *,
@@ -36,31 +38,74 @@ button {
 ------------------------------------- */
 
 :root {
-  // Brand colors
-  --color-primary: #3b82f6; // Blue-500
-  --color-secondary: #0ea5e9; // Sky-500
-  --color-accent: #6366f1; // Indigo-500
+  /* Brand Colors - Chrome-like */
+  --color-primary: #1a73e8;
+  --color-primary-hover: #1557b0;
+  --color-primary-active: #1143a3;
+  --color-secondary: #5f6368;
+  --color-secondary-hover: #3c4043;
+  --color-accent: #1a73e8;
 
-  // System
-  --color-success: #22c55e;
-  --color-error: #ef4444;
-  --color-warning: #facc15;
+  /* System Colors - Chrome-like */
+  --color-success: #137333;
+  --color-success-hover: #0f5132;
+  --color-error: #d93025;
+  --color-error-hover: #b52d20;
+  --color-warning: #f29900;
+  --color-warning-hover: #e8710a;
+  --color-info: #1a73e8;
 
-  // Typography
-  --text: #1e293b;
-  --text-muted: #6b7280;
+  /* Typography Colors */
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
   --text-on-primary: #ffffff;
+  --text-on-surface: #0f172a;
 
-  // Backgrounds
-  --bg: #f9fafb;
+  /* Background Colors - Chrome-like */
+  --bg: #ffffff;
   --surface: #ffffff;
-  --surface-hover: #f1f5f9;
+  --surface-hover: #f8f9fa;
+  --surface-variant: #f1f3f4;
+  --surface-muted: #e8eaed;
+  --surface-selected: #e8f0fe;
 
-  // Misc
-  --border: #e2e8f0;
-  --shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  /* Border & Shadow - Chrome-like */
+  --border: #dadce0;
+  --border-focus: #1a73e8;
+  --shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+  --shadow-lg: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 2px 6px 2px rgba(60, 64, 67, 0.15);
+  --shadow-button: 0 1px 3px 0 rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15);
 
-  // Chat
+  /* Spacing Scale */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 18px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 32px;
+
+  /* Typography Scale */
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --text-xl: 24px;
+  --text-2xl: 32px;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 50%;
+
+  /* Avatar Sizes */
+  --avatar-sm: 24px;
+  --avatar-md: 32px;
+  --avatar-lg: 48px;
+
+  /* Chat Specific */
   --user-msg: #e0f2fe;
   --peer-msg: #f8fafc;
   --system-msg: #fef3c7;
@@ -70,25 +115,46 @@ button {
    Dark Theme Overrides
 ------------------------------------- */
 [theme="dark"] {
-  --color-primary: #3b82f6;
-  --color-secondary: #38bdf8;
-  --color-accent: #8b5cf6;
+  /* Brand Colors - Chrome Dark */
+  --color-primary: #8ab4f8;
+  --color-primary-hover: #aecbfa;
+  --color-primary-active: #669df6;
+  --color-secondary: #9aa0a6;
+  --color-secondary-hover: #bdc1c6;
+  --color-accent: #8ab4f8;
 
-  --color-success: #22c55e;
-  --color-error: #ef4444;
-  --color-warning: #fde047;
+  /* System Colors - Chrome Dark */
+  --color-success: #81c995;
+  --color-success-hover: #5bb974;
+  --color-error: #f28b82;
+  --color-error-hover: #ee675c;
+  --color-warning: #fdd663;
+  --color-warning-hover: #fbbc04;
+  --color-info: #8ab4f8;
 
-  --text: #f8fafc;
-  --text-muted: #94a3b8;
-  --text-on-primary: #ffffff;
+  /* Typography Colors - Chrome Dark */
+  --text: #e8eaed;
+  --text-muted: #9aa0a6;
+  --text-light: #80868b;
+  --text-on-primary: #202124;
+  --text-on-surface: #e8eaed;
 
-  --bg: #0f172a;
-  --surface: #1e293b;
-  --surface-hover: #334155;
+  /* Background Colors - Chrome Dark */
+  --bg: #202124;
+  --surface: #303134;
+  --surface-hover: #3c4043;
+  --surface-variant: #3c4043;
+  --surface-muted: #5f6368;
+  --surface-selected: #1a73e8;
 
-  --border: #475569;
-  --shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  /* Border & Shadow - Chrome Dark */
+  --border: #5f6368;
+  --border-focus: #8ab4f8;
+  --shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 2px 6px 2px rgba(0, 0, 0, 0.15);
+  --shadow-button: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 4px 8px 3px rgba(0, 0, 0, 0.15);
 
+  /* Chat Specific */
   --user-msg: #1e40af;
   --peer-msg: #1e293b;
   --system-msg: #fde68a;

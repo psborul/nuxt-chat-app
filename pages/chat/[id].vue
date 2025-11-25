@@ -1,24 +1,24 @@
 <template>
   <div class="chat-page">
-    <!-- <SidebarMembers :users="users" :current-user="user" /> -->
+    <SidebarMembers :users="room?.users || []" :current-user="user" />
 
     <main class="chat-page__main">
       <header class="header">
         <div>
           Room: {{ room?.name }}
           <div class="mobile-user-count">
-            {{ users.length }} member{{ users.length !== 1 ? 's,' : ',' }}
+            {{ room?.users?.length || 0 }} member{{ (room?.users?.length || 0) !== 1 ? 's,' : ',' }}
             <span class="online-summary">{{ onlineCount }} online</span>
           </div>
         </div>
-        <Button variant="primary" @click.prevent="handleLeave">LEAVE</Button>
+        <Button variant="secondary" @click.prevent="handleLeave">Leave</Button>
       </header>
 
       <div class="message-window">
         <div ref="messageContainer" class="message-view">
-          <MessageItem
-v-for="message in messages" :id="message.id" :key="message.id" :content="message.content"
-            :created-at="message.createdAt" :self="message.userId === user?.id" :type="message.type || ''" />
+          <MessageItem v-for="message in messages" :id="message.id" :key="message.id" :content="message.content"
+            :created-at="message.createdAt" :self="message.userId === user?.id" :type="message.type || ''" 
+            :username="message.username" />
         </div>
 
         <form class="form" @submit.prevent="handleSubmit">
@@ -35,7 +35,6 @@ import MessageItem from '~/components/MessageItem.vue';
 import type Textfield from '~/components/Textfield.vue';
 import MessagesService from '~/services/api/MessagesService';
 import RoomService from '~/services/api/RoomService';
-import UsersService from '~/services/api/UsersService';
 import SocketService, { SOCKET_EVENT_TYPE } from '~/services/SocketService';
 import Storage from '~/services/Storage';
 import type { Message, User, Room } from '~/types';
@@ -46,24 +45,18 @@ const roomId = params.id as string;
 
 const text = ref('');
 const user = ref<User>();
-const users = ref<string[]>([]);
 const room = ref<Room>();
 const messages = ref<Message[]>([]);
 
 const messageContainer = ref<HTMLElement | null>(null);
 
-const fetchUsers = async () => {
-   const room = await RoomService.getById(roomId);
-   users.value = room.users;
+const fetchRoom = async () => {
+  room.value = await RoomService.getById(roomId);
 };
 
 const fetchMessages = async () => {
-  messages.value = await MessagesService.getMessages(roomId)
-  console.log(messages.value)
-};
-
-const fetchRoom = async () => {
-  room.value = await RoomService.getById(roomId);
+  messages.value = await MessagesService.getMessages(roomId);
+  console.log(messages.value);
 };
 
 const socketUrl = `ws://localhost:3001/ws/socket`;
@@ -71,13 +64,13 @@ const socketService = new SocketService(socketUrl);
 socketService.connect();
 
 socketService.emitter.$on(SOCKET_EVENT_TYPE.OPEN, () => {
-    fetchUsers()
+  fetchRoom();
   socketService.joinRoom({ roomId });
 });
 
 socketService.emitter.$on(SOCKET_EVENT_TYPE.MESSAGE, (data) => {
   messages.value.push(data);
-  fetchUsers()
+  fetchRoom(); // Update room data including users
   //SCROLL ON NEW MESSAGE
   nextTick(() => {
     messageContainer.value?.scrollTo({ top: messageContainer.value.scrollHeight });
@@ -88,10 +81,9 @@ onMounted(() => {
   user.value = Storage.get<User>(STORAGE_USER_KEY);
 
   Promise.allSettled([
-  // fetchMessages(),
-  fetchUsers(),
-  fetchRoom()
-]);
+    fetchMessages(),
+    fetchRoom()
+  ]);
 
   window.addEventListener('beforeunload', handleLeave);
 });
@@ -119,7 +111,7 @@ const handleLeave = () => {
   router.push({ name: ROUTE.ROOMS });
 };
 
-const onlineCount = computed(() => users.value.filter(user => user.online).length);
+const onlineCount = computed(() => room.value?.users?.filter(user => user.online).length || 0);
 
 definePageMeta({ middleware: 'auth' });
 </script>

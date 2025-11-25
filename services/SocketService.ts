@@ -1,24 +1,24 @@
-import EmitterService from './EmitterService';
+import EmitterService from "./EmitterService";
+import Storage from "./Storage";
 
 export const SOCKET_EVENT_TYPE = {
-  "OPEN": "OPEN",
-  "MESSAGE": "MESSAGE",
-  "CLOSE": "CLOSE",
-  "ERROR": "ERROR",
-  "USER_JOIN": "USER_JOIN"
+  OPEN: "OPEN",
+  MESSAGE: "MESSAGE",
+  CLOSE: "CLOSE",
+  ERROR: "ERROR",
+  USER_JOIN: "USER_JOIN",
 } as const;
 
 export enum MESSAGE_ACTION {
   "JOIN" = "JOIN",
   "LEAVE" = "LEAVE",
-  "CHAT" = "CHAT"
+  "CHAT" = "CHAT",
 }
 
 export enum MESSAGE_TYPE {
   "SYSTEM" = "SYSTEM",
   "USER" = "USER",
-  "DATA" = "DATA"
-};
+}
 
 export default class SocketService {
   private url: string;
@@ -31,13 +31,14 @@ export default class SocketService {
 
   connect(): void {
     if (this.socket) return; // Prevent duplicate connections
-    console.log(this.url)
-
-    this.socket = new WebSocket(this.url);
+    console.log(this.url);
+    const user = Storage.get(STORAGE_USER_KEY);
+    const token = user?.token;
+    this.socket = new WebSocket(this.url, [token]);
 
     this.socket.onopen = () => {
       this.emitter.$emit(SOCKET_EVENT_TYPE.OPEN);
-      console.log('WebSocket connected');
+      console.log("WebSocket connected");
     };
 
     this.socket.onmessage = (event: MessageEvent) => {
@@ -54,17 +55,17 @@ export default class SocketService {
 
     this.socket.onclose = () => {
       this.emitter.$emit(SOCKET_EVENT_TYPE.CLOSE);
-      console.log('WebSocket closed');
+      console.log("WebSocket closed");
       this.socket = null;
     };
 
     this.socket.onerror = (err: Event) => {
       this.emitter.$emit(SOCKET_EVENT_TYPE, err);
-      console.error('WebSocket error', err);
+      console.error("WebSocket error", err);
     };
   }
 
-  joinRoom({ roomId }: { roomId: string; }) {
+  joinRoom({ roomId }: { roomId: string }) {
     console.log("JOINROOM");
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       this.send({
@@ -72,30 +73,30 @@ export default class SocketService {
         roomId: roomId,
       });
     } else {
-      console.warn('WebSocket is not connected yet. Cannot send message:');
+      console.warn("WebSocket is not connected yet. Cannot send message:");
     }
-  };
+  }
 
-  leaveRoom({ roomId }: { roomId: string; }) {
+  leaveRoom({ roomId }: { roomId: string }) {
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       this.send({
         type: MESSAGE_ACTION.LEAVE,
         roomId: roomId,
       });
     } else {
-      console.warn('WebSocket is not connected yet. Cannot send message:');
+      console.warn("WebSocket is not connected yet. Cannot send message:");
     }
-  };
+  }
 
   sendMessage(data: any): void {
     if (this.socket?.readyState === WebSocket.OPEN) {
       const payload = {
         ...data,
-        type: MESSAGE_ACTION.CHAT
+        type: MESSAGE_ACTION.CHAT,
       };
       this.send(payload);
     } else {
-      console.warn('Cannot send, socket not open', data);
+      console.warn("Cannot send, socket not open", data);
     }
   }
 
@@ -103,7 +104,7 @@ export default class SocketService {
     if (this.socket?.readyState === WebSocket.OPEN) {
       this.socket.send(JSON.stringify(data));
     } else {
-      console.warn('Cannot send, socket not open', data);
+      console.warn("Cannot send, socket not open", data);
     }
   }
 

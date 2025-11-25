@@ -3,10 +3,17 @@
     <p>Members in room:</p>
     <ul class="user-list">
       <li
-v-for="userItem in users" :key="userItem.id" class="user-item"
-        :class="{ self: userItem.id === currentUser?.id }">
-        <span class="status-indicator" :class="{ online: userItem.online, offline: !userItem.online }" />
-        <span class="avatar">{{ userItem.username.charAt(0).toUpperCase() }}</span>
+        v-for="userItem in users" 
+        :key="userItem.id" 
+        class="user-item"
+        :class="{ self: userItem.id === currentUser?.id }"
+      >
+        <Avatar 
+          :username="userItem.username" 
+          size="sm" 
+          :online="userItem.online" 
+          show-status 
+        />
         <span class="username">{{ userItem.username }}</span>
         <span v-if="userItem.id === currentUser?.id" class="you-label">(you)</span>
       </li>
@@ -25,79 +32,70 @@ defineProps<{
 
 <style scoped lang="scss">
 .sidebar {
-  background-color: var(--surface-hover);
+  background-color: var(--surface);
   color: var(--text);
-  padding: 10px;
-  border-right: 1px solid var(--border);
-  min-width: 180px;
+  padding: var(--spacing-md);
+  border-right: 2px solid var(--border);
+  min-width: 220px;
+  max-width: 280px;
+  flex-shrink: 0;
 
   @media (max-width: 768px) {
     display: none;
   }
+
+  h3, p {
+    margin: 0 0 var(--spacing-md) 0;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
 }
 
 .user-list {
-  margin-top: 10px;
+  margin-top: var(--spacing-sm);
   padding: 0;
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--spacing-xs);
 }
 
 .user-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 6px 8px;
-  border-radius: 6px;
-  font-size: 14px;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
   background-color: var(--surface);
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
 
   &:hover {
     background-color: var(--surface-hover);
+    border-color: var(--border);
   }
 
   &.self {
     font-weight: 600;
-    background-color: var(--user-msg);
+    background-color: color-mix(in srgb, var(--color-primary) 10%, var(--surface));
+    border-color: var(--color-primary);
   }
 
-  .avatar {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background-color: var(--color-primary);
-    color: var(--text-on-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: bold;
-  }
-
-  .status-indicator {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-
-    &.online {
-      background-color: var(--color-success);
-    }
-
-    &.offline {
-      background-color: var(--muted);
-    }
-  }
 
   .username {
     flex: 1;
   }
 
   .you-label {
-    font-size: 12px;
-    color: var(--muted);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    background-color: var(--surface-variant);
+    padding: 2px var(--spacing-xs);
+    border-radius: var(--radius-sm);
   }
 }
 </style>

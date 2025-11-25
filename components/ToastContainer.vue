@@ -30,25 +30,30 @@ const { toasts } = useToast()
 .toast {
   pointer-events: auto;
   position: relative;
-  margin-bottom: 8px; /* space between toasts */
-  padding: 10px 16px;
-  border-radius: 6px;
-  font-weight: 500;
-  color: white;
-  min-width: 220px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  margin-bottom: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  color: var(--text-on-primary);
+  min-width: 280px;
+  box-shadow: var(--shadow-lg);
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
 }
 
 /* Toast types */
 .toast.success {
   background-color: var(--color-success);
+  border-color: color-mix(in srgb, var(--color-success) 80%, black);
 }
 .toast.error {
   background-color: var(--color-error);
+  border-color: color-mix(in srgb, var(--color-error) 80%, black);
 }
 .toast.info {
-  background-color: var(--color-primary);
+  background-color: var(--color-info);
+  border-color: color-mix(in srgb, var(--color-info) 80%, black);
 }
 
 /* Enter animation */

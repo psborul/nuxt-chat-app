@@ -1,41 +1,24 @@
 <template>
   <div class="rooms-page">
     <header class="rooms-header">
-  <Button
-    @click="toggleTheme"
-    variant="secondary"
-    class="inline-flex items-center gap-2 px-3 py-2 rounded-lg border"
-  >
-    <span>{{ theme === 'dark' ? '🌙 ' : '☀️ ' }}</span>
-    <span class="capitalize">{{ theme }}</span>
-  </Button>
+      <Button @click="toggleTheme" variant="secondary" size="small">
+        <span>{{ theme === 'dark' ? '🌙 ' : '☀️ ' }}</span>
+        <span class="capitalize">{{ theme }}</span>
+      </Button>
       <h1>Hello, {{ user?.username }}</h1>
-      <Button variant="primary" @click="handleLogout">Log out</Button>
+      <Button variant="secondary" @click="handleLogout">Log out</Button>
     </header>
 
     <!-- Room Creation Form -->
     <form class="rooms-form" @submit.prevent="handleCreateRoom">
-      <Textfield
-        v-model="roomName"
-        placeholder="Enter new room name"
-        class="room-name-input"
-        required
-      />
-      <Button variant="secondary">Create Room</Button>
+      <Textfield v-model="roomName" placeholder="Enter new room name" class="room-name-input" required />
+      <Button variant="primary">Create Room</Button>
     </form>
 
     <!-- Room List -->
     <div class="room-list">
-      <RoomCard
-        v-for="room in rooms"
-        :key="room.id"
-        :room="room"
-        :owned="room.createdBy === user?.id"
-        @join="handleJoin"
-        @delete="handleDelete"
-        @open-chat="handleOpenChat"
-        @leave="handleLeave"
-      />
+      <RoomCard v-for="room in rooms" :key="room.id" :room="room" :owned="room.createdBy === user?.id"
+        @join="handleJoin" @delete="handleDelete" @open-chat="handleOpenChat" @leave="handleLeave" />
     </div>
   </div>
 </template>
@@ -46,7 +29,7 @@ import RoomService from '~/services/api/RoomService';
 import Storage from '~/services/Storage';
 import type { Room } from '~/types';
 
-const { theme, toggleTheme } = useTheme()
+const { theme, toggleTheme } = useTheme();
 
 const router = useRouter();
 const user = ref();
@@ -60,7 +43,7 @@ onMounted(() => {
 
 const getRooms = async () => {
   if (!user.value?.id) return;
-  rooms.value = await RoomService.getAllByUserId(user.value.id);
+  rooms.value = await RoomService.getAllRooms();
 };
 
 const handleLogout = () => {
@@ -71,7 +54,7 @@ const handleLogout = () => {
 const handleCreateRoom = async () => {
   if (!roomName.value.trim()) return;
 
-  await RoomService.create(roomName.value.trim())
+  await RoomService.create(roomName.value.trim());
 
   roomName.value = '';
   getRooms();
@@ -82,19 +65,19 @@ const handleOpenChat = (roomId: string) => {
 };
 
 const handleDelete = async (roomId: string) => {
-  await RoomService.delete(roomId)
+  await RoomService.delete(roomId);
 
   getRooms();
 };
 
-const handleLeave = async ({ roomId }: { roomId: string }) => {
-  await RoomService.leave(roomId)
+const handleLeave = async ({ roomId }: { roomId: string; }) => {
+  await RoomService.leave(roomId);
   getRooms();
 };
 
-const handleJoin = async ({ roomId, createdBy }: { roomId: string; createdBy: string }) => {
+const handleJoin = async ({ roomId, createdBy }: { roomId: string; createdBy: string; }) => {
   if (user.value.id !== createdBy) {
-    await RoomService.join(roomId)
+    await RoomService.join(roomId);
   }
   getRooms();
 };
