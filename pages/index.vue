@@ -1,7 +1,7 @@
 <template>
   <v-row no-gutters align="center" justify="center">
     <v-col cols="auto">
-      <v-snackbar v-model="snackbar" :timeout="3000" :color="snackbarColor" location="top">
+      <v-snackbar v-model="snackbar" :timeout="SNACKBAR_TIMEOUT_MS" :color="snackbarColor" location="top">
         {{ snackbarText }}
         <template #actions>
           <v-btn variant="text" @click="snackbar = false">Close</v-btn>
@@ -9,7 +9,6 @@
       </v-snackbar>
 
       <v-card min-width="290" color="#424242">
-
         <v-card-title>
           <h2>Login</h2>
         </v-card-title>
@@ -17,14 +16,14 @@
           <v-form ref="form" v-model="isValid" @submit.prevent="submit">
             <v-text-field
               v-model="user.name"
-              :counter="16"
+              :counter="MAX_NAME_LEN"
               :rules="nameRules"
               label="Name"
               required
             />
             <v-text-field
               v-model="user.room"
-              :counter="16"
+              :counter="MAX_ROOM_LEN"
               :rules="roomRules"
               label="Enter the room"
               required
@@ -47,6 +46,7 @@
 
 <script setup lang="ts">
 import messageDict from '~/lib/messageDict'
+import { MAX_NAME_LEN, MAX_ROOM_LEN, SNACKBAR_TIMEOUT_MS } from '~~/shared/constants'
 import { useChatStore } from '~/stores/chat'
 
 definePageMeta({ layout: 'login' })
@@ -66,11 +66,11 @@ const user = reactive({
 
 const nameRules = [
   (v: string) => !!v || 'Name is required',
-  (v: string) => (v && v.length <= 16) || 'Name must be less than 16 characters',
+  (v: string) => (v && v.length <= MAX_NAME_LEN) || `Name must be ${MAX_NAME_LEN} characters or fewer`,
 ]
 const roomRules = [
   (v: string) => !!v || 'Enter the room',
-  (v: string) => (v && v.length <= 16) || 'Room must be less than 16 characters',
+  (v: string) => (v && v.length <= MAX_ROOM_LEN) || `Room must be ${MAX_ROOM_LEN} characters or fewer`,
 ]
 
 const initialMessage = (() => {

@@ -1,4 +1,5 @@
 import { io, type Socket } from 'socket.io-client'
+import { SOCKET_EVENTS } from '~~/shared/constants'
 import { useChatStore } from '~/stores/chat'
 
 export default defineNuxtPlugin(() => {
@@ -11,8 +12,8 @@ export default defineNuxtPlugin(() => {
 
   const store = useChatStore()
 
-  socket.on('newMessage', (msg) => store.addMessage(msg))
-  socket.on('updateUsers', (users) => store.setUsers(users))
+  socket.on(SOCKET_EVENTS.NEW_MESSAGE, msg => store.addMessage(msg))
+  socket.on(SOCKET_EVENTS.UPDATE_USERS, users => store.setUsers(users))
   socket.io.on('reconnect', () => store.reconnect())
 
   return {

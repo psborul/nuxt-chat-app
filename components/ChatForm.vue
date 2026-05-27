@@ -5,7 +5,7 @@
       label="Message..."
       variant="outlined"
       :rules="rules"
-      append-inner-icon="mdi-send-circle-outline"
+      :append-inner-icon="mdiSendCircleOutline"
       @update:model-value="typing"
       @click:append-inner="send"
       @blur="resetValidation"
@@ -14,6 +14,7 @@
 </template>
 
 <script setup lang="ts">
+import { mdiSendCircleOutline } from '@mdi/js'
 import { useChatStore } from '~/stores/chat'
 
 const store = useChatStore()

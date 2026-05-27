@@ -1,13 +1,14 @@
 <template>
   <div class="chat-wrapper">
     <div ref="chat" class="chat">
-      <Message v-for="(msg, index) in messages" :key="`message-${index}`" :message="msg" :owner="msg.id === user?.id" />
+      <Message
+        v-for="(msg, index) in messages"
+        :key="`message-${index}`"
+        :message="msg"
+        :owner="msg.id === user?.id"
+      />
     </div>
-    <div v-if="typingUsers.length" class="chat__typing">
-      <p v-for="(typingUser, index) in typingUsers" :key="`typingUser-${index}`" class="chat__typing-user">
-        {{ typingUser.name }} is typing...
-      </p>
-    </div>
+    <TypingIndicator :users="typingUsers" />
     <div class="chat__form">
       <ChatForm />
     </div>
@@ -15,40 +16,37 @@
 </template>
 
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
-import Message from '~/components/Message.vue';
-import ChatForm from '~/components/ChatForm.vue';
-import { useChatStore } from '~/stores/chat';
+import { storeToRefs } from 'pinia'
+import { CHAT_AUTOSCROLL_THRESHOLD_PX } from '~~/shared/constants'
+import { useChatStore } from '~/stores/chat'
 
-definePageMeta({ layout: 'chat', middleware: 'auth' });
+definePageMeta({ layout: 'chat', middleware: 'auth' })
 
-const store = useChatStore();
-const { user, messages } = storeToRefs(store);
-const typingUsers = computed(() => store.typingUsers);
+const store = useChatStore()
+const { user, messages } = storeToRefs(store)
+const typingUsers = computed(() => store.typingUsers)
 
-useHead({ title: () => `Room ${user?.value?.room ?? ''}` });
+useHead({ title: () => `Room ${user.value?.room ?? ''}` })
 
-const chat = ref<HTMLElement | null>(null);
-
-const NEAR_BOTTOM_PX = 80;
+const chat = ref<HTMLElement | null>(null)
 
 function isNearBottom(el: HTMLElement) {
-  return el.scrollHeight - (el.scrollTop + el.clientHeight) <= NEAR_BOTTOM_PX;
+  return el.scrollHeight - (el.scrollTop + el.clientHeight) <= CHAT_AUTOSCROLL_THRESHOLD_PX
 }
 
 watch(
   () => messages.value.length,
   () => {
-    const el = chat.value;
-    if (!el) return;
+    const el = chat.value
+    if (!el) return
     // Capture pre-render position so a new incoming message doesn't yank
     // a user who scrolled up to read history back to the bottom.
-    const shouldStick = isNearBottom(el);
+    const shouldStick = isNearBottom(el)
     nextTick(() => {
-      if (shouldStick && chat.value) chat.value.scrollTop = chat.value.scrollHeight;
-    });
+      if (shouldStick && chat.value) chat.value.scrollTop = chat.value.scrollHeight
+    })
   },
-);
+)
 </script>
 
 <style scoped>
@@ -76,15 +74,5 @@ watch(
   padding: 1rem;
   overflow-y: auto;
   color: #000;
-}
-
-.chat__typing {
-  position: absolute;
-  display: flex;
-  bottom: 50px;
-}
-
-.chat__typing-user:not(:first-child) {
-  margin-left: 15px;
 }
 </style>
