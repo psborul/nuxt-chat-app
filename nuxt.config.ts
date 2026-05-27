@@ -1,7 +1,7 @@
 export default defineNuxtConfig({
   ssr: true,
   devtools: { enabled: true },
-  modules: ['@pinia/nuxt', 'vuetify-nuxt-module'],
+  modules: ['@pinia/nuxt', 'vuetify-nuxt-module', '@nuxt/eslint'],
   css: ['@mdi/font/css/materialdesignicons.css'],
   app: {
     head: {
@@ -9,7 +9,7 @@ export default defineNuxtConfig({
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { hid: 'description', name: 'description', content: 'Simple chat on Nuxt.js' },
+        { key: 'description', name: 'description', content: 'Simple chat on Nuxt.js' },
       ],
       link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
     },
@@ -43,5 +43,5 @@ export default defineNuxtConfig({
       },
     },
   },
-  compatibilityDate: '2025-05-27',
+  compatibilityDate: '2026-05-28',
 })

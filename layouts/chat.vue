@@ -1,20 +1,12 @@
 <template>
   <v-app>
-    <v-navigation-drawer
-      v-model="drawer"
-      :mobile-breakpoint="650"
-      color="accent"
-    >
+    <v-navigation-drawer v-model="drawer" :mobile-breakpoint="650" color="accent">
       <v-list>
         <v-list-subheader>Users in room</v-list-subheader>
 
-        <v-list-item
-          v-for="({ name, id }, index) in users"
-          :key="`user-${index}`"
-          :title="name"
-        >
+        <v-list-item v-for="({ name, id }, index) in users" :key="`user-${index}`" :title="name">
           <template #append>
-            <v-icon :color="id === user.id ? 'primary' : 'grey'">
+            <v-icon :color="id === user?.id ? 'primary' : 'grey'">
               mdi-account-circle-outline
             </v-icon>
           </template>
@@ -26,7 +18,7 @@
       <v-app-bar-nav-icon @click="drawer = !drawer" />
       <v-toolbar-title>
         Room
-        <v-chip color="grey">{{ user.room }}</v-chip>
+        <v-chip color="grey">{{ user?.room }}</v-chip>
       </v-toolbar-title>
       <v-spacer />
       <v-btn icon class="mx-1" @click="exit">
@@ -43,21 +35,21 @@
 </template>
 
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
-import { useChatStore } from '~/stores/chat'
+import { storeToRefs } from 'pinia';
+import { useChatStore } from '~/stores/chat';
 
-const router = useRouter()
-const store = useChatStore()
-const { user, users } = storeToRefs(store)
+const router = useRouter();
+const store = useChatStore();
+const { user, users } = storeToRefs(store);
 
-const drawer = ref(true)
+const drawer = ref(true);
 
 onMounted(() => {
-  store.joinRoom()
-})
+  store.joinRoom();
+});
 
 function exit() {
-  store.leftRoom()
-  router.push('/?message=leftChat')
+  store.leftRoom();
+  router.push('/?message=leftChat');
 }
 </script>

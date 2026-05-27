@@ -32,8 +32,12 @@ async function send() {
   if (!valid) return
 
   store.createMessage(text.value)
-  store.setTypingStatus(false)
+  // Reset BEFORE flipping typingStatus to false: form.reset() clears the
+  // text field, which fires @update:model-value → typing(). While
+  // typingStatus is still true, typing() short-circuits. If we flip to
+  // false first, the reset-triggered typing() flips it back to true.
   form.value.reset()
+  store.setTypingStatus(false)
 }
 
 function resetValidation() {

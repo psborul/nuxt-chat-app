@@ -25,8 +25,8 @@ export class UsersDB {
   }
 
   setTypingStatus(id: string, typingStatus: boolean) {
-    const idx = this.users.findIndex(u => u.id === id)
-    if (idx >= 0) this.users[idx].typingStatus = typingStatus
+    const user = this.users.find(u => u.id === id)
+    if (user) user.typingStatus = typingStatus
   }
 }
 

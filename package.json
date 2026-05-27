@@ -1,7 +1,7 @@
 {
   "name": "nuxt-chat-app",
   "version": "2.0.0",
-  "description": "Simple chat on Nuxt 3 + Vuetify 3 + Pinia + socket.io",
+  "description": "Simple chat on Nuxt 4 + Vuetify 4 + Pinia + socket.io",
   "author": "Petro Borul",
   "private": false,
   "engines": {
@@ -12,22 +12,26 @@
     "build": "nuxt build",
     "preview": "nuxt preview",
     "generate": "nuxt generate",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --build",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
-    "@pinia/nuxt": "^0.5.5",
-    "pinia": "^2.2.6",
+    "@pinia/nuxt": "^0.11.3",
+    "pinia": "^3.0.4",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
     "vue": "^3.5.13",
-    "vue-router": "^4.4.5",
-    "vuetify": "^3.7.4",
-    "vuetify-nuxt-module": "^0.18.3"
+    "vuetify": "^4.0.7",
+    "vuetify-nuxt-module": "^0.19.5"
   },
   "devDependencies": {
-    "nuxt": "^3.14.1592",
+    "@nuxt/eslint": "^1.15.2",
+    "eslint": "^10.4.0",
+    "nuxt": "^4.4.6",
     "sass": "^1.81.0",
-    "typescript": "^5.6.3"
+    "typescript": "^6.0.3"
   }
 }

@@ -1,0 +1,32 @@
+# Render Blueprint
+# https://render.com/docs/blueprint-spec
+#
+# Connect this repo at https://dashboard.render.com/blueprints — Render reads
+# this file on first connect and provisions the service. Subsequent git pushes
+# to `master` auto-redeploy.
+#
+# Node version is picked from .nvmrc (currently 22).
+#
+# Note: chat state is in-memory, so we run a SINGLE instance (numInstances: 1).
+# Horizontal scaling requires a socket.io Redis adapter + shared store.
+
+services:
+  - type: web
+    name: nuxt-chat-app
+    runtime: node
+    plan: free
+    region: oregon
+    branch: master
+    numInstances: 1
+    healthCheckPath: /
+    buildCommand: npm ci && npm run build
+    startCommand: node .output/server/index.mjs
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NITRO_HOST
+        value: 0.0.0.0
+      # Render injects PORT automatically; Nitro picks it up.
+      # Optional: lock down socket.io CORS to your Render URL.
+      # - key: SOCKET_IO_CORS_ORIGIN
+      #   value: https://your-app.onrender.com

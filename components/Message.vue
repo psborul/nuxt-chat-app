@@ -18,12 +18,7 @@
 </template>
 
 <script setup lang="ts">
-interface ChatMessage {
-  id?: string
-  name: string
-  text: string
-  time: string
-}
+import type { ChatMessage } from '~/stores/chat'
 
 const props = defineProps<{
   message: ChatMessage

@@ -1,12 +1,12 @@
 <template>
   <v-row no-gutters align="center" justify="center">
     <v-col cols="auto">
-      <VSnackbar v-model="snackbar" :timeout="3000" location="top">
-        {{ message }}
+      <v-snackbar v-model="snackbar" :timeout="3000" :color="snackbarColor" location="top">
+        {{ snackbarText }}
         <template #actions>
           <v-btn variant="text" @click="snackbar = false">Close</v-btn>
         </template>
-      </VSnackbar>
+      </v-snackbar>
 
       <v-card min-width="290" color="#424242">
 
@@ -31,6 +31,7 @@
             />
             <v-btn
               :disabled="!isValid"
+              :loading="submitting"
               color="primary"
               class="mt-3"
               type="submit"
@@ -45,7 +46,6 @@
 </template>
 
 <script setup lang="ts">
-import { VSnackbar } from 'vuetify/components/VSnackbar'
 import messageDict from '~/lib/messageDict'
 import { useChatStore } from '~/stores/chat'
 
@@ -73,18 +73,34 @@ const roomRules = [
   (v: string) => (v && v.length <= 16) || 'Room must be less than 16 characters',
 ]
 
-const message = computed(() => {
+const initialMessage = (() => {
   const key = route.query.message
   return (typeof key === 'string' && messageDict[key]) || ''
-})
+})()
 
-const snackbar = ref(Boolean(message.value))
+const snackbar = ref(Boolean(initialMessage))
+const snackbarText = ref(initialMessage)
+const snackbarColor = ref<string | undefined>(undefined)
+const submitting = ref(false)
+
+function showError(text: string) {
+  snackbarText.value = text
+  snackbarColor.value = 'error'
+  snackbar.value = true
+}
 
 async function submit() {
-  if (!form.value) return
+  if (!form.value || submitting.value) return
   const { valid } = await form.value.validate()
   if (!valid) return
-  await store.createUser({ ...user })
-  router.push('/chat')
+  submitting.value = true
+  try {
+    await store.createUser({ ...user })
+    router.push('/chat')
+  } catch {
+    showError("Couldn't reach the server. Try again.")
+  } finally {
+    submitting.value = false
+  }
 }
 </script>
