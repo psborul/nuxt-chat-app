@@ -67,7 +67,7 @@ Notes:
 
 ## Demo
 
-Live on Render: https://nuxt-chat-app-1-xayn.onrender.com
+Live on Render: https://nuxt-chat-app-5.onrender.com
 
 (First request after ~15 min of inactivity takes ~30s while the free instance wakes up.)
 
