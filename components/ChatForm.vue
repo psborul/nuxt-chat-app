@@ -1,51 +1,48 @@
 <template>
-  <v-form
-    ref="form"
-    @submit.prevent="send"
-  >
+  <v-form ref="form" @submit.prevent="send">
     <v-text-field
       v-model="text"
       label="Message..."
-      outlined
+      variant="outlined"
       :rules="rules"
-      append-icon="mdi-send-circle-outline"
-      @input="typing"
-      @click:append="send"
+      append-inner-icon="mdi-send-circle-outline"
+      @update:model-value="typing"
+      @click:append-inner="send"
       @blur="resetValidation"
     />
   </v-form>
 </template>
 
-<script>
-import { mapActions, mapGetters } from "vuex";
+<script setup lang="ts">
+import { useChatStore } from '~/stores/chat'
 
-export default {
-  data: () => ({
-    text: "",
-    rules: [v => !!v || "Text is required"],
-  }),
-  computed: {
-    ...mapGetters(["typingStatus"]),
-  },
-  methods: {
-    ...mapActions(["createMessage", "setTypingStatus"]),
-    send() {
-      if (this.$refs.form.validate()) {
-        this.createMessage(this.text);
-        this.text = "";
+const store = useChatStore()
 
-        this.setTypingStatus(false);
-        this.resetValidation();
-      }
-    },
-    resetValidation() {
-      this.$refs.form.resetValidation();
-    },
-    typing() {
-      if (!this.typingStatus) {
-        this.setTypingStatus(true);
-      }
-    },
-  },
-};
+const form = ref<{
+  validate: () => Promise<{ valid: boolean }>
+  reset: () => void
+  resetValidation: () => void
+} | null>(null)
+const text = ref('')
+const rules = [(v: string) => !!v || 'Text is required']
+
+async function send() {
+  if (!form.value) return
+  const { valid } = await form.value.validate()
+  if (!valid) return
+
+  store.createMessage(text.value)
+  store.setTypingStatus(false)
+  form.value.reset()
+}
+
+function resetValidation() {
+  form.value?.resetValidation()
+}
+
+function typing() {
+  if (!store.typingStatus) {
+    store.setTypingStatus(true)
+  }
+}
 </script>

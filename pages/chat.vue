@@ -1,20 +1,14 @@
 <template>
   <div class="chat-wrapper">
-    <div
-      ref="chat"
-      class="chat"
-    >
+    <div ref="chat" class="chat">
       <Message
-        v-for="(message, index) in messages"
+        v-for="(msg, index) in messages"
         :key="`message-${index}`"
-        :message="message"
-        :owner="message.id === user.id"
+        :message="msg"
+        :owner="msg.id === user.id"
       />
     </div>
-    <div
-      v-if="typingUsers.length"
-      class="chat__typing"
-    >
+    <div v-if="typingUsers.length" class="chat__typing">
       <p
         v-for="(typingUser, index) in typingUsers"
         :key="`typingUser-${index}`"
@@ -29,37 +23,30 @@
   </div>
 </template>
 
-<script>
-import { mapState, mapGetters } from "vuex";
-import Message from "@/components/Message";
-import ChatForm from "@/components/ChatForm";
+<script setup lang="ts">
+import { storeToRefs } from 'pinia'
+import Message from '~/components/Message.vue'
+import ChatForm from '~/components/ChatForm.vue'
+import { useChatStore } from '~/stores/chat'
 
-export default {
-  name: "ChatPage",
-  layout: "chat",
-  components: {
-    Message,
-    ChatForm,
+definePageMeta({ layout: 'chat', middleware: 'auth' })
+
+const store = useChatStore()
+const { user, messages } = storeToRefs(store)
+const typingUsers = computed(() => store.typingUsers)
+
+useHead({ title: () => `Room ${user.value.room ?? ''}` })
+
+const chat = ref<HTMLElement | null>(null)
+
+watch(
+  () => messages.value.length,
+  () => {
+    nextTick(() => {
+      if (chat.value) chat.value.scrollTop = chat.value.scrollHeight
+    })
   },
-  computed: {
-    ...mapState(["user", "messages", "users"]),
-    ...mapGetters(["typingUsers"]),
-  },
-  watch: {
-    messages() {
-      setTimeout(() => {
-        if (this.$refs.chat) {
-          this.$refs.chat.scrollTop = this.$refs.chat.scrollHeight;
-        }
-      }, 0);
-    },
-  },
-  head() {
-    return {
-      title: `Room ${this.user.room}`,
-    };
-  },
-};
+)
 </script>
 
 <style scoped>
@@ -95,7 +82,7 @@ export default {
   bottom: 50px;
 }
 
-.chat__typing-user:not(first-child) {
+.chat__typing-user:not(:first-child) {
   margin-left: 15px;
 }
 </style>
