@@ -1,13 +1,16 @@
 import type { Server as HttpServer } from 'node:http'
 import { Server as IOServer, type Socket } from 'socket.io'
+import {
+  MAX_MSG_LEN,
+  MAX_NAME_LEN,
+  MAX_ROOM_LEN,
+  SOCKET_EVENTS,
+  SYSTEM_AUTHOR,
+} from '../../shared/constants'
 import { Message } from '../utils/Message'
 import { usersDB } from '../utils/users'
 
 let io: IOServer | null = null
-
-const MAX_NAME_LEN = 16
-const MAX_ROOM_LEN = 16
-const MAX_MSG_LEN = 1000
 
 function isCleanString(v: unknown, maxLen: number): v is string {
   return typeof v === 'string' && v.length > 0 && v.length <= maxLen
@@ -15,7 +18,7 @@ function isCleanString(v: unknown, maxLen: number): v is string {
 
 function attachHandlers(server: IOServer) {
   server.on('connection', (socket: Socket) => {
-    socket.on('createUser', (user: unknown, ack) => {
+    socket.on(SOCKET_EVENTS.CREATE_USER, (user: unknown, ack) => {
       const u = user as { name?: unknown; room?: unknown; typingStatus?: unknown } | undefined
       if (!isCleanString(u?.name, MAX_NAME_LEN) || !isCleanString(u?.room, MAX_ROOM_LEN)) return
       usersDB.addUser({
@@ -27,39 +30,42 @@ function attachHandlers(server: IOServer) {
       if (typeof ack === 'function') ack({ id: socket.id })
     })
 
-    socket.on('joinRoom', (_payload: unknown) => {
+    socket.on(SOCKET_EVENTS.JOIN_ROOM, (_payload: unknown) => {
       // Source of truth is server-side state, not the client-supplied payload.
       const user = usersDB.getUser(socket.id)
       if (!user) return
       const { name, room } = user
       socket.join(room)
-      server.to(room).emit('updateUsers', usersDB.getUsersByRoom(room))
-      socket.emit('newMessage', new Message('admin', `Hello, ${name}`))
+      server.to(room).emit(SOCKET_EVENTS.UPDATE_USERS, usersDB.getUsersByRoom(room))
+      socket.emit(SOCKET_EVENTS.NEW_MESSAGE, new Message(SYSTEM_AUTHOR, `Hello, ${name}`))
       socket.broadcast
         .to(room)
-        .emit('newMessage', new Message('admin', `User ${name} connected to chat`))
+        .emit(SOCKET_EVENTS.NEW_MESSAGE, new Message(SYSTEM_AUTHOR, `User ${name} connected to chat`))
     })
 
-    socket.on('createMessage', (payload: unknown) => {
+    socket.on(SOCKET_EVENTS.CREATE_MESSAGE, (payload: unknown) => {
       const p = payload as { msg?: unknown } | undefined
       if (!isCleanString(p?.msg, MAX_MSG_LEN)) return
       // Ignore any client-supplied id; only trust socket.id.
       const user = usersDB.getUser(socket.id)
       if (!user) return
-      server.to(user.room).emit('newMessage', new Message(user.name, p.msg as string, socket.id))
+      server.to(user.room).emit(
+        SOCKET_EVENTS.NEW_MESSAGE,
+        new Message(user.name, p.msg as string, socket.id),
+      )
     })
 
-    socket.on('setTypingStatus', (payload: unknown) => {
+    socket.on(SOCKET_EVENTS.SET_TYPING_STATUS, (payload: unknown) => {
       const p = payload as { typingStatus?: unknown } | undefined
       if (typeof p?.typingStatus !== 'boolean') return
       // Ignore any client-supplied room/id; only trust server state.
       const user = usersDB.getUser(socket.id)
       if (!user) return
       usersDB.setTypingStatus(socket.id, p.typingStatus)
-      server.to(user.room).emit('updateUsers', usersDB.getUsersByRoom(user.room))
+      server.to(user.room).emit(SOCKET_EVENTS.UPDATE_USERS, usersDB.getUsersByRoom(user.room))
     })
 
-    const exitEvents = ['leftChat', 'disconnect'] as const
+    const exitEvents = [SOCKET_EVENTS.LEFT_CHAT, 'disconnect'] as const
     exitEvents.forEach((event) => {
       socket.on(event, () => {
         const user = usersDB.getUser(socket.id)
@@ -67,10 +73,10 @@ function attachHandlers(server: IOServer) {
         const { room, name } = user
         usersDB.removeUser(socket.id)
         socket.leave(room)
-        server.to(room).emit('updateUsers', usersDB.getUsersByRoom(room))
+        server.to(room).emit(SOCKET_EVENTS.UPDATE_USERS, usersDB.getUsersByRoom(room))
         server
           .to(room)
-          .emit('newMessage', new Message('admin', `User ${name} left chat`))
+          .emit(SOCKET_EVENTS.NEW_MESSAGE, new Message(SYSTEM_AUTHOR, `User ${name} left chat`))
       })
     })
   })

@@ -2,7 +2,9 @@ export default defineNuxtConfig({
   ssr: true,
   devtools: { enabled: true },
   modules: ['@pinia/nuxt', 'vuetify-nuxt-module', '@nuxt/eslint'],
-  css: ['@mdi/font/css/materialdesignicons.css'],
+  // No @mdi/font CSS — Vuetify uses the mdi-svg icon set and we import only
+  // the four path constants we actually render, via @mdi/js.
+  css: [],
   app: {
     head: {
       title: 'nuxt-chat-app',
@@ -20,7 +22,7 @@ export default defineNuxtConfig({
     },
     vuetifyOptions: {
       icons: {
-        defaultSet: 'mdi',
+        defaultSet: 'mdi-svg',
       },
       theme: {
         defaultTheme: 'dark',

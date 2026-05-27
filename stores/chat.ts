@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import type { Socket } from 'socket.io-client'
+import { CREATE_USER_TIMEOUT_MS, SOCKET_EVENTS } from '~~/shared/constants'
 
 export interface ChatUser {
   id: string
@@ -34,7 +35,7 @@ export const useChatStore = defineStore('chat', {
 
   getters: {
     typingUsers(state) {
-      return state.users.filter(u => u.typingStatus && state.user?.id !== u.id)
+      return state.users.filter(user => user.typingStatus && state.user?.id !== user.id)
     },
     typingStatus(state): boolean {
       return Boolean(state.user?.typingStatus)
@@ -61,28 +62,30 @@ export const useChatStore = defineStore('chat', {
     },
 
     async createUser(payload: CreateUserPayload) {
-      const ack = (await getSocket().timeout(10_000).emitWithAck('createUser', payload)) as { id: string }
+      const ack = (await getSocket()
+        .timeout(CREATE_USER_TIMEOUT_MS)
+        .emitWithAck(SOCKET_EVENTS.CREATE_USER, payload)) as { id: string }
       this.user = { ...payload, id: ack.id }
     },
 
     joinRoom() {
       if (!this.user) return
-      getSocket().emit('joinRoom', { name: this.user.name, room: this.user.room })
+      getSocket().emit(SOCKET_EVENTS.JOIN_ROOM, { name: this.user.name, room: this.user.room })
     },
 
     createMessage(msg: string) {
       if (!this.user) return
-      getSocket().emit('createMessage', { msg })
+      getSocket().emit(SOCKET_EVENTS.CREATE_MESSAGE, { msg })
     },
 
     setTypingStatus(status: boolean) {
       this.setTypingStatusLocal(status)
       if (!this.user) return
-      getSocket().emit('setTypingStatus', { typingStatus: status })
+      getSocket().emit(SOCKET_EVENTS.SET_TYPING_STATUS, { typingStatus: status })
     },
 
     leftRoom() {
-      getSocket().emit('leftChat')
+      getSocket().emit(SOCKET_EVENTS.LEFT_CHAT)
       this.clearData()
     },
 
