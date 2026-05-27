@@ -23,7 +23,7 @@
     "vue": "^3.5.13",
     "vue-router": "^4.4.5",
     "vuetify": "^3.7.4",
-    "vuetify-nuxt-module": "^0.18.3"
+    "vuetify-nuxt-module": "^0.19.5"
   },
   "devDependencies": {
     "nuxt": "^3.14.1592",
