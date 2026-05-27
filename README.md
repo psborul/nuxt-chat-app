@@ -67,7 +67,11 @@ Notes:
 
 ## Demo
 
-Originally deployed at https://nuxt-chat-app.herokuapp.com/ (Heroku free tier was retired in 2022, so the URL is no longer live).
+Live on Render: https://nuxt-chat-app-1-xayn.onrender.com
+
+(First request after ~15 min of inactivity takes ~30s while the free instance wakes up.)
+
+Originally deployed at https://nuxt-chat-app.herokuapp.com/ — kept here for history; Heroku's free tier was retired in 2022 so the URL is no longer live.
 
 ## Original tutorials
 
