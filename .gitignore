@@ -67,6 +67,8 @@ typings/
 
 # nuxt.js build output
 .nuxt
+.output
+.data
 
 # Nuxt generate
 dist
@@ -88,3 +90,6 @@ sw.*
 
 # Vim swap files
 *.swp
+
+# Playwright MCP output
+.playwright-mcp/

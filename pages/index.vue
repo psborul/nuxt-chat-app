@@ -1,29 +1,20 @@
 <template>
-  <v-row
-    no-gutters
-    align="center"
-    justify="center"
-  >
+  <v-row no-gutters align="center" justify="center">
     <v-col cols="auto">
-      <v-card
-        min-width="290"
-        color="#424242"
-      >
-        <Snackbar
-          v-model="snackbar"
-          :text="message"
-        />
+      <VSnackbar v-model="snackbar" :timeout="3000" location="top">
+        {{ message }}
+        <template #actions>
+          <v-btn variant="text" @click="snackbar = false">Close</v-btn>
+        </template>
+      </VSnackbar>
+
+      <v-card min-width="290" color="#424242">
 
         <v-card-title>
           <h2>Login</h2>
         </v-card-title>
         <v-card-text>
-          <v-form
-            ref="form"
-            v-model="isValid"
-            lazy-validation
-            @submit.prevent="submit"
-          >
+          <v-form ref="form" v-model="isValid" @submit.prevent="submit">
             <v-text-field
               v-model="user.name"
               :counter="16"
@@ -53,56 +44,47 @@
   </v-row>
 </template>
 
-<script>
-import { mapActions } from "vuex";
-import Snackbar from "@/components/Snackbar";
-import messageDict from "@/lib/messageDict";
+<script setup lang="ts">
+import { VSnackbar } from 'vuetify/components/VSnackbar'
+import messageDict from '~/lib/messageDict'
+import { useChatStore } from '~/stores/chat'
 
-export default {
-  name: "Home",
-  layout: "login",
-  components: {
-    Snackbar,
-  },
-  data: () => ({
-    isValid: true,
-    user: {
-      name: "",
-      room: "",
-      typingStatus: false,
-    },
-    nameRules: [
-      v => !!v || "Name is required",
-      v => (v && v.length <= 16) || "Name must be less than 16 characters",
-    ],
-    roomRules: [
-      v => !!v || "Enter the room",
-      v => (v && v.length <= 16) || "Room must be less than 16 characters",
-    ],
-    snackbar: false,
-  }),
-  computed: {
-    message() {
-      const { message } = this.$route.query;
-      return messageDict[message] || "";
-    },
-  },
-  mounted() {
-    this.snackbar = !!this.message;
-  },
+definePageMeta({ layout: 'login' })
+useHead({ title: 'nuxt-chat-app' })
 
-  methods: {
-    ...mapActions(["createUser"]),
-    submit() {
-      if (this.$refs.form.validate()) {
-        this.createUser(this.user);
-        this.$router.push("/chat");
-      }
-    },
-  },
+const router = useRouter()
+const route = useRoute()
+const store = useChatStore()
 
-  head: {
-    title: "nuxt-chat-app",
-  },
-};
+const form = ref<{ validate: () => Promise<{ valid: boolean }> } | null>(null)
+const isValid = ref(true)
+const user = reactive({
+  name: '',
+  room: '',
+  typingStatus: false,
+})
+
+const nameRules = [
+  (v: string) => !!v || 'Name is required',
+  (v: string) => (v && v.length <= 16) || 'Name must be less than 16 characters',
+]
+const roomRules = [
+  (v: string) => !!v || 'Enter the room',
+  (v: string) => (v && v.length <= 16) || 'Room must be less than 16 characters',
+]
+
+const message = computed(() => {
+  const key = route.query.message
+  return (typeof key === 'string' && messageDict[key]) || ''
+})
+
+const snackbar = ref(Boolean(message.value))
+
+async function submit() {
+  if (!form.value) return
+  const { valid } = await form.value.validate()
+  if (!valid) return
+  await store.createUser({ ...user })
+  router.push('/chat')
+}
 </script>

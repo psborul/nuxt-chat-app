@@ -1,85 +1,63 @@
 <template>
-  <v-app style="background: #303030;">
+  <v-app>
     <v-navigation-drawer
       v-model="drawer"
-      app
-      mobile-break-point="650"
-      color="$accent"
+      :mobile-breakpoint="650"
+      color="accent"
     >
-      <v-list subheader>
-        <v-subheader>Users in room</v-subheader>
+      <v-list>
+        <v-list-subheader>Users in room</v-list-subheader>
 
         <v-list-item
           v-for="({ name, id }, index) in users"
           :key="`user-${index}`"
-          @click.prevent
+          :title="name"
         >
-          <v-list-item-content>
-            <v-list-item-title v-text="name" />
-          </v-list-item-content>
-
-          <v-list-item-icon>
+          <template #append>
             <v-icon :color="id === user.id ? 'primary' : 'grey'">
               mdi-account-circle-outline
             </v-icon>
-          </v-list-item-icon>
+          </template>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar
-      app
-      color="#424242"
-    >
+    <v-app-bar color="#424242">
       <v-app-bar-nav-icon @click="drawer = !drawer" />
       <v-toolbar-title>
         Room
-        <v-chip color="grey">
-          {{ user.room }}
-        </v-chip>
+        <v-chip color="grey">{{ user.room }}</v-chip>
       </v-toolbar-title>
       <v-spacer />
-      <v-btn
-        icon
-        class="mx-1"
-        @click="exit"
-      >
+      <v-btn icon class="mx-1" @click="exit">
         <v-icon>mdi-exit-to-app</v-icon>
       </v-btn>
     </v-app-bar>
 
-    <v-content>
-      <v-container
-        fluid
-        style="height: 100%;"
-      >
-        <nuxt />
+    <v-main>
+      <v-container fluid style="height: 100%">
+        <slot />
       </v-container>
-    </v-content>
+    </v-main>
   </v-app>
 </template>
 
-<script>
-import { mapState, mapMutations, mapActions } from "vuex";
+<script setup lang="ts">
+import { storeToRefs } from 'pinia'
+import { useChatStore } from '~/stores/chat'
 
-export default {
-  name: "ChatLayout",
-  data: () => ({
-    drawer: true,
-  }),
-  computed: {
-    ...mapState(["user", "users"]),
-  },
-  middleware: "auth",
-  created() {
-    this.joinRoom(this.user);
-  },
-  methods: {
-    ...mapActions(["joinRoom", "leftRoom"]),
-    exit() {
-      this.leftRoom();
-      this.$router.push("/?message=leftChat");
-    },
-  },
-};
+const router = useRouter()
+const store = useChatStore()
+const { user, users } = storeToRefs(store)
+
+const drawer = ref(true)
+
+onMounted(() => {
+  store.joinRoom()
+})
+
+function exit() {
+  store.leftRoom()
+  router.push('/?message=leftChat')
+}
 </script>
