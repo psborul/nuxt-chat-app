@@ -30,7 +30,7 @@
   "devDependencies": {
     "@nuxt/eslint": "^1.15.2",
     "eslint": "^10.4.0",
-    "nuxt": "^4.4.6",
+    "nuxt": "^4.5.1",
     "sass": "^1.81.0",
     "typescript": "^6.0.3"
   }
